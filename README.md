@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OpsRelay — Supplier Disruption Brain
 
-## Getting Started
+**Graph Hacks 2026 · Company Brain track**
 
-First, run the development server:
+OpsRelay answers an operations team's practical question: *if a supplier misses a date, which customer commitments break, why, and who should respond?* It follows relationships from supplier to component, product, order, customer, and owner in **FalkorDB**. A delay changes the graph, recalculates shortages, creates review tasks, and leaves the source trail visible. Recovery changes the answer without erasing the history.
+
+The included company, people, orders, and documents are entirely synthetic. The analysis is deterministic and graph-grounded; the interface identifies it as such. There is no LLM or external company integration in this version.
+
+## Working scenario
+
+- Kestrel Components supplies six M14 motors, originally arriving **20 October 2026**. Two are already in stock.
+- Two Atlas Conveyors for Hightower need four motors by **25 October**. Three Boreal Sorters for Vale Foods need three by **28 October**. A later Cedar Logistics order needs one.
+- Record a delay to **5 November**. OpsRelay follows the graph and shows shortages of **two** and **three** motors for the first two orders; the later order remains covered.
+- Inspect each order's graph path and source records. Ask who is responsible or why an order is at risk. Approve or reject the proposed customer response.
+- Record recovery to **20 October**. All three commitments become covered again; prior updates and decisions remain in the graph.
+
+## Run locally
+
+Requires Node.js 20+ and Docker. FalkorDB is the primary data store; the app has no substitute data path.
 
 ```bash
+docker run -d --name opsrelay-falkordb -p 6379:6379 -p 3001:3000 -v opsrelay-falkordb-data:/data falkordb/falkordb:latest
+npm ci
+npm run seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). The FalkorDB browser is at [http://localhost:3001](http://localhost:3001). A managed instance also works: set `FALKORDB_URL` to its `falkor://` connection URL before seeding and starting the app. `FALKORDB_GRAPH` defaults to `opsrelay`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Seeding is idempotent on an untouched graph. To reset **only the selected graph** and remove its updates and reviews:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+OPSRELAY_ALLOW_RESET=1 npm run seed -- --reset
+```
 
-## Learn More
+Do not run the reset command against a graph containing data you need. Local smoke checks: `npm run build`, `npm run typecheck`, `npm run lint`, `npm run test:e2e`. Browser tests use a separate `opsrelay_e2e` graph and run the full workflow at desktop, tablet, and mobile sizes.
 
-To learn more about Next.js, take a look at the following resources:
+## Graph model
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```mermaid
+flowchart LR
+  S[Supplier] -->|SUPPLIES| C[Component]
+  L[InventoryLot] -->|FOR_COMPONENT| C
+  D[Supply] -->|FOR_COMPONENT| C
+  P[Product] -->|REQUIRES quantity| C
+  O[Order] -->|FOR_PRODUCT| P
+  O -->|FOR_CUSTOMER| U[Customer]
+  O -->|OWNED_BY| H[Person]
+  H -->|MEMBER_OF| T[Team]
+  E[SupplyEvent] -->|UPDATES| D
+  E -->|SUPPORTED_BY| R[SourceRecord]
+  A[Action] -->|RESPONDS_TO| E
+  R2[Old SourceRecord] -->|SUPERSEDED_BY| R3[Current SourceRecord]
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Nodes and edges are seeded by [`scripts/seed.mjs`](scripts/seed.mjs). `SourceRecord` IDs on the supplier link, bill of materials, orders, and owner records connect each visible claim to its provenance. `SupplyEvent` and `Action` nodes retain later updates and reviews.
 
-## Deploy on Vercel
+The graph traversal that identifies connected commitments is in [`src/lib/ops.ts`](src/lib/ops.ts):
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```cypher
+MATCH (component:Component {id:$componentId})<-[requirement:REQUIRES]-(product:Product)
+      <-[:FOR_PRODUCT]-(order:Order)-[:FOR_CUSTOMER]->(customer:Customer)
+OPTIONAL MATCH (order)-[:OWNED_BY]->(person:Person)
+RETURN order.id AS id, product.name AS product, order.quantity AS units,
+       order.dueDate AS dueDate, customer.name AS customer,
+       requirement.quantity AS quantity, requirement.sourceId AS bomSourceId,
+       order.sourceId AS orderSourceId, person.name AS owner
+ORDER BY order.dueDate, order.id
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The app reads inventory and inbound supply from the graph, then allocates motors in due-date order. An order can use inbound units only if the current arrival date is on or before its due date. This is a transparent single-component planning rule, not a full production optimizer. Without FalkorDB, the impact list, evidence paths, update history, and review queue cannot run.
+
+## Architecture and boundaries
+
+- Next.js 16 App Router UI and route handler; FalkorDB JavaScript client runs on the server.
+- `GET /api/ops` reads the current graph. `POST /api/ops` records delay, recovery, or review, or returns deterministic question analysis. Inputs are validated and Cypher values are passed as parameters.
+- Customer communication is a **draft review task**. Approval records a human decision; OpsRelay does not send messages to customers.
+- The demo uses one shared synthetic graph. Public visitors can alter its state; reset the demo graph before judging. It is not designed for private company data or unrestricted production use.
+
+## Demo and submission
+
+See [`demo/DEMO_SCRIPT.md`](demo/DEMO_SCRIPT.md) for the reproducible click path. The recorded video, when present, is [`demo/opsrelay-demo.mp4`](demo/opsrelay-demo.mp4). The entered track is **Company Brain**.
+
+**AI coding disclosure:** Codex assisted with planning, implementation, and QA. The participant reviewed the data model, behavior, browser results, and documentation. No AI model generates the answer shown in this version.
+
+## Why the graph matters
+
+The same M14 component is shared by multiple products and orders. A single supply date update changes commitments across customers; source and ownership edges provide the explanation and next responsible person. Removing FalkorDB removes the relationships the workflow depends on.
