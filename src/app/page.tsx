@@ -1,9 +1,9 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import type { getState } from "@/lib/ops";
 
-type State = Awaited<ReturnType<typeof getState>>;
+type State = Awaited<ReturnType<typeof getState>> & { actor: string };
 type Answer = { answer: string; mode: string; sources: string[] };
 
 function date(value: string) {
@@ -16,6 +16,8 @@ function sourceLabel(id: string) {
 
 export default function Home() {
   const [state, setState] = useState<State | null>(null);
+  const [signedOut, setSignedOut] = useState(false);
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState("");
   const [arrivalDate, setArrivalDate] = useState("2026-11-05");
@@ -26,19 +28,45 @@ export default function Home() {
   const sourceDialog = useRef<HTMLDialogElement>(null);
   const [question, setQuestion] = useState("Which customer commitments are at risk and why?");
   const [answer, setAnswer] = useState<Answer | null>(null);
-  const [reviewer, setReviewer] = useState("Operations lead");
+  const reviewer = state?.actor || "Operations lead";
 
   useEffect(() => {
     if (selectedSource) sourceDialog.current?.showModal();
   }, [selectedSource]);
 
-  useEffect(() => {
+  const loadWorkspace = useCallback(() =>
     fetch("/api/ops", { cache: "no-store" }).then(async (response) => {
+      if (response.status === 401) { setSignedOut(true); setState(null); return; }
       const body = await response.json();
       if (!response.ok) throw new Error(body.error);
       setState(body);
-    }).catch((cause) => setError(cause.message || "Could not load the company graph."));
-  }, []);
+      setSignedOut(false);
+      setError("");
+    }).catch((cause) => { setError(cause instanceof Error ? cause.message : "Could not load the company graph."); }), []);
+
+  useEffect(() => { void loadWorkspace(); }, [loadWorkspace]);
+
+  async function signIn(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy("login");
+    setError("");
+    try {
+      const response = await fetch("/api/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error);
+      setPassword("");
+      await loadWorkspace();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Sign-in failed."); }
+    finally { setBusy(""); }
+  }
+
+  async function signOut() {
+    try {
+      const response = await fetch("/api/session", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind: "logout" }) });
+      if (!response.ok) throw new Error();
+      setState(null); setAnswer(null); setSignedOut(true);
+    } catch { setError("Sign-out failed. Please try again."); }
+  }
 
   async function mutate(payload: Record<string, unknown>, label: string) {
     setBusy(label);
@@ -46,6 +74,7 @@ export default function Home() {
     try {
       const response = await fetch("/api/ops", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       const body = await response.json();
+      if (response.status === 401) { setSignedOut(true); setState(null); }
       if (!response.ok) throw new Error(body.error || "The operation failed.");
       if (payload.kind === "ask") setAnswer(body);
       else { setState(body); setAnswer(null); }
@@ -72,11 +101,11 @@ export default function Home() {
       <div className="sidebar-foot"><i/> FalkorDB context layer<small>Live graph · synthetic data</small></div>
     </aside>
     <main id="overview" className="main">
-      <header className="topbar"><span>Northstar Works <b>/</b> Operations <b>/</b> Overview</span><span className="live"><i/> Live graph <b>|</b> Company Brain · Graph Hacks 2026</span></header>
+      <header className="topbar"><span>Northstar Works <b>/</b> Operations <b>/</b> Overview</span><span className="live"><i/> Live graph <b>|</b> Company Brain · Graph Hacks 2026 {state && <button className="signout" type="button" onClick={signOut}>Sign out</button>}</span></header>
       <div className="content">
         <div className="hero"><div><p className="eyebrow">OPERATIONS COMMAND CENTER</p><h1>Know what a delay<br/><em>really affects.</em></h1><p>One supplier update. Every connected commitment, owner, and next step—grounded in your company graph.</p></div><div className="hero-art" aria-hidden="true"><i/><i/><i/></div></div>
         {error && <div className="error" role="alert"><strong>Needs attention</strong><span>{error}</span><button type="button" onClick={() => setError("")} aria-label="Dismiss error">×</button></div>}
-        {!state ? <div className="loading" role="status">{error ? "Company graph is unavailable." : "Connecting to the company graph…"}</div> : <>
+        {signedOut ? <section className="panel login"><p className="eyebrow">PRIVATE COMPANY WORKSPACE</p><h2>Sign in to OpsRelay</h2><p>Your workspace data and operational decisions require operator access.</p><form onSubmit={signIn}><label htmlFor="operator-password">Operator password</label><input id="operator-password" type="password" autoComplete="current-password" required maxLength={256} value={password} onChange={(event) => setPassword(event.target.value)}/><button className="primary" disabled={Boolean(busy)}>{busy === "login" ? "Signing in…" : "Sign in"}</button></form></section> : !state ? <div className="loading" role="status">{error ? <span>Company graph is unavailable. <button type="button" onClick={loadWorkspace}>Try again</button></span> : "Connecting to the company graph…"}</div> : <>
           <section className="metrics" aria-label="Current metrics">
             <div><small>AT-RISK ORDERS</small><strong className={state.impactedCount ? "risk-text" : ""}>{String(state.impactedCount).padStart(2, "0")}</strong><span>{state.impactedCount ? "Require review" : "All commitments covered"}</span></div>
             <div><small>TRACKED COMMITMENTS</small><strong>{String(state.impacts.length).padStart(2, "0")}</strong><span>Across {new Set(state.impacts.map((order) => order.customer)).size} customers</span></div>
@@ -93,7 +122,7 @@ export default function Home() {
             <div className="right-col">
               <section className="panel update"><div className="panel-head"><div><p className="eyebrow">UPDATE THE GRAPH</p><h2>New supply signal</h2></div><span className="panel-mark">↗</span></div><div className="switch" role="group" aria-label="Update type"><button type="button" aria-pressed={updateKind === "delay"} onClick={() => { setUpdateKind("delay"); setArrivalDate("2026-11-05"); }}>Record delay</button><button type="button" aria-pressed={updateKind === "recovery"} onClick={() => { setUpdateKind("recovery"); setArrivalDate("2026-10-20"); }}>Record recovery</button></div><form onSubmit={submitUpdate}><label>Revised arrival date<input type="date" required value={arrivalDate} onChange={(event) => setArrivalDate(event.target.value)}/></label><label>Source note<textarea rows={3} minLength={8} maxLength={280} required value={note} onChange={(event) => setNote(event.target.value)}/></label><p>This becomes a dated source record in FalkorDB. Impact is recalculated from connected orders.</p><button className="primary" disabled={Boolean(busy)}>{busy === updateKind ? "Saving to graph…" : updateKind === "delay" ? "Record supplier delay ↗" : "Record recovery ↗"}</button></form></section>
               <section className="panel ask"><div className="panel-head"><div><p className="eyebrow">ASK THE COMPANY BRAIN</p><h2>What should we know?</h2></div><span className="panel-mark purple">✦</span></div><form onSubmit={(event) => { event.preventDefault(); mutate({ kind: "ask", question }, "ask"); }}><label className="sr-only" htmlFor="question">Question about company commitments</label><textarea id="question" rows={3} minLength={8} maxLength={300} value={question} onChange={(event) => setQuestion(event.target.value)}/><button disabled={Boolean(busy)}>{busy === "ask" ? "Following graph paths…" : "Ask OpsRelay ↗"}</button></form>{answer && <div className="answer" role="status"><small>{answer.mode.toUpperCase()}</small><p>{answer.answer}</p><div className="source-links">{answer.sources.map((id) => <button type="button" key={id} onClick={() => setSelectedSource(id)}>{sourceLabel(id)} ↗</button>)}</div></div>}</section>
-              <section className="panel actions" id="actions"><div className="panel-head"><div><p className="eyebrow">HUMAN APPROVAL</p><h2>Review queue</h2></div><span className="meta">{state.actions.length} total</span></div>{!state.actions.length ? <p className="empty">Actions appear when a delay threatens a commitment.</p> : <><label className="reviewer">Reviewer name<input value={reviewer} maxLength={60} onChange={(event) => setReviewer(event.target.value)}/></label><div className="action-list">{state.actions.map((action) => <div key={action.id}><strong>{action.title}</strong><small>{action.status === "proposed" ? "Draft · approval required" : action.status === "superseded" ? "Closed after recovery" : `${action.status} by ${action.reviewer}`}</small>{action.status === "proposed" && <p><button disabled={Boolean(busy)} type="button" onClick={() => mutate({ kind: "review", id: action.id, decision: "approved", reviewer }, "review")}>Approve</button><button disabled={Boolean(busy)} type="button" onClick={() => mutate({ kind: "review", id: action.id, decision: "rejected", reviewer }, "review")}>Reject</button></p>}</div>)}</div></>}</section>
+              <section className="panel actions" id="actions"><div className="panel-head"><div><p className="eyebrow">HUMAN APPROVAL</p><h2>Review queue</h2></div><span className="meta">{state.actions.length} total</span></div>{!state.actions.length ? <p className="empty">Actions appear when a delay threatens a commitment.</p> : <><p className="reviewer">Signed in as {reviewer}</p><div className="action-list">{state.actions.map((action) => <div key={action.id}><strong>{action.title}</strong><small>{action.status === "proposed" ? "Draft · approval required" : action.status === "superseded" ? "Closed after recovery" : `${action.status} by ${action.reviewer}`}</small>{action.status === "proposed" && <p><button disabled={Boolean(busy)} type="button" onClick={() => mutate({ kind: "review", id: action.id, decision: "approved" }, "review")}>Approve</button><button disabled={Boolean(busy)} type="button" onClick={() => mutate({ kind: "review", id: action.id, decision: "rejected" }, "review")}>Reject</button></p>}</div>)}</div></>}</section>
             </div>
           </div>
           <section className="timeline"><div><p className="eyebrow">GRAPH MEMORY</p><h2>Supply history</h2><p>Updates remain traceable as the current answer changes.</p></div><div>{state.events.length ? state.events.map((event) => <button type="button" key={event.id} onClick={() => setSelectedSource(event.sourceId)}><strong>{event.kind === "delay" ? "Delay reported" : "Recovery confirmed"}</strong><small>Arrival {date(event.arrivalDate)} · {event.note}</small></button>) : <div><strong>Original supply plan</strong><small>{state.supplyQuantity} motors expected {date(state.plannedDate)}</small></div>}</div></section>

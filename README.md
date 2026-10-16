@@ -21,13 +21,14 @@ Requires Node.js 22.6+ and Docker. FalkorDB is the primary data store; the app h
 ```bash
 docker run -d --name opsrelay-falkordb -p 6379:6379 -p 3001:3000 -v opsrelay-falkordb-data:/data falkordb/falkordb:latest
 npm ci
+npm run configure
 npm run seed
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The FalkorDB browser is at [http://localhost:3001](http://localhost:3001). A managed instance also works: set `FALKORDB_URL` to its `falkor://` connection URL before seeding and starting the app. `FALKORDB_GRAPH` defaults to `opsrelay`.
+Open [http://localhost:3000](http://localhost:3000). Sign in with `OPSRELAY_OPERATOR_PASSWORD` from the private, ignored `.env.local` file created by `npm run configure`. Never commit or share that file. The FalkorDB browser is at [http://localhost:3001](http://localhost:3001). A managed instance also works: set `FALKORDB_URL` to its connection URL before seeding and starting the app. Production connections to remote databases require TLS (`falkors://` or `rediss://`). `FALKORDB_GRAPH` defaults to `opsrelay`.
 
-For FalkorDB Cloud, put its connection URL in an ignored `.env.local` file using `.env.example` as the template. Both the app and seed command read it. Preserve the connection scheme provided by the service (`falkors://` or `rediss://` for TLS). Keep the complete URL private. The hosted app needs the same `FALKORDB_URL` and `FALKORDB_GRAPH` server environment variables.
+For FalkorDB Cloud, put its connection URL in an ignored `.env.local` file using `.env.example` as the template. Both the app and seed command read it. Preserve the connection scheme provided by the service (`falkors://` or `rediss://` for TLS). Keep the complete URL private. The hosted app needs the same `FALKORDB_URL`, `FALKORDB_GRAPH`, `OPSRELAY_OPERATOR_PASSWORD` (at least 20 characters), and `OPSRELAY_OPERATOR_NAME` server environment variables.
 
 Seeding leaves an existing nonempty graph unchanged. To reset **only the selected graph** and remove its updates and reviews:
 
@@ -37,7 +38,7 @@ OPSRELAY_ALLOW_RESET=1 npm run seed -- --reset
 
 Do not run the reset command against a graph containing data you need. Local checks: `npm test`, `npm run build`, `npm run typecheck`, `npm run lint`, `npm run test:e2e`. Browser tests use a separate `opsrelay_e2e` graph and run the full workflow at desktop, tablet, and mobile sizes. The seed asserts baseline node and motor requirement counts; the allocation tests check shortages, recovery coverage, arrival eligibility, and stable priority.
 
-For a single-container preview, build the included `Dockerfile` and serve port `10000`. It runs FalkorDB on localhost and seeds the synthetic graph on every start. This supports free ephemeral hosts such as Render; sleep, restart, or redeploy resets visitor changes. Use a persistent FalkorDB instance for lasting data.
+For a single-container preview, build the included `Dockerfile` and serve port `10000`, passing the operator password as a runtime environment variable. It runs FalkorDB on localhost and seeds the synthetic graph on every start. This supports free ephemeral hosts such as Render; sleep, restart, or redeploy resets visitor changes. Use a persistent FalkorDB instance for lasting data.
 
 ## Graph model
 
@@ -81,7 +82,7 @@ The app reads inventory and inbound supply from the graph, then allocates motors
 - Next.js 16 App Router UI and route handler; FalkorDB JavaScript client runs on the server.
 - `GET /api/ops` reads the current graph. `POST /api/ops` records delay, recovery, or review, or returns deterministic question analysis. Inputs are validated and Cypher values are passed as parameters.
 - Customer communication is a **draft review task**. Approval records a human decision; OpsRelay does not send messages to customers.
-- The demo uses one shared synthetic graph. Public visitors can alter its state; reset the demo graph before judging. It is not designed for private company data or unrestricted production use.
+- The workspace uses one synthetic graph and one operator identity. All graph access requires sign-in. See [security and deployment boundaries](docs/SECURITY.md) before hosting.
 
 ## Demo and submission
 
@@ -92,3 +93,7 @@ See [`demo/DEMO_SCRIPT.md`](demo/DEMO_SCRIPT.md) for the reproducible click path
 ## Why the graph matters
 
 The same M14 component is shared by multiple products and orders. A single supply date update changes commitments across customers; source and ownership edges provide the explanation and next responsible person. Removing FalkorDB removes the relationships the workflow depends on.
+
+## Verification and release
+
+GitHub Actions runs allocation tests, ESLint, the production dependency audit, a production build, and browser workflow/security checks against real FalkorDB. Visual baselines are compared on macOS; Linux CI checks functionality and accessibility. See [observed verification results](docs/verification.md).

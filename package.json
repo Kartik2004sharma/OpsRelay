@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "seed": "node scripts/seed.mjs",
+    "configure": "node scripts/configure-local.mjs",
     "test": "node --experimental-strip-types --test tests/allocation.test.mjs",
     "test:e2e": "npm run build && playwright test"
   },

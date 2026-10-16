@@ -1,6 +1,10 @@
 import { execFileSync, spawn } from "node:child_process";
 import { mkdir, rename } from "node:fs/promises";
 import { chromium } from "@playwright/test";
+import { loadEnvFile } from "node:process";
+
+try { loadEnvFile(".env.local"); } catch (error) { if (error.code !== "ENOENT") throw error; }
+if (!process.env.OPSRELAY_OPERATOR_PASSWORD) throw new Error("Configure the private operator password before recording.");
 
 const env = { ...process.env, FALKORDB_GRAPH: "opsrelay_demo", OPSRELAY_ALLOW_RESET: "1" };
 execFileSync(process.execPath, ["scripts/seed.mjs", "--reset"], { env, stdio: "inherit" });
@@ -10,7 +14,7 @@ let browser;
 try {
   for (let attempt = 0; attempt < 60; attempt++) {
     try {
-      if ((await fetch("http://127.0.0.1:3102/api/ops")).ok) break;
+      if ((await fetch("http://127.0.0.1:3102/api/health")).ok) break;
     } catch { /* server starting */ }
     if (attempt === 59) throw new Error("Demo server did not start.");
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -21,6 +25,8 @@ try {
   const page = await context.newPage();
   const pause = () => page.waitForTimeout(3000);
   await page.goto("http://127.0.0.1:3102");
+  await page.getByLabel("Operator password").fill(process.env.OPSRELAY_OPERATOR_PASSWORD);
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await page.getByText("All commitments covered").waitFor();
   await pause();
   await page.getByRole("button", { name: /Old supply planning note/i }).click();

@@ -1,34 +1,25 @@
 import { answerQuestion, getState, recordDelay, recordRecovery, reviewAction } from "@/lib/ops";
-
-function failure(error: unknown) {
-  const message = error instanceof Error ? error.message : "Unknown error";
-  const validation = /^(Enter|Choose|Source note|A delay|A recovery|Invalid action|This action)/.test(message);
-  if (!validation) console.error("OpsRelay operation failed:", error);
-  return Response.json({ error: validation ? message : "Company graph is unavailable. Check FalkorDB and try again." }, { status: validation ? 400 : 503 });
-}
+import { requireOperator } from "@/lib/auth";
+import { failure, json, readJson } from "@/lib/http";
 
 export async function GET() {
   try {
-    return Response.json(await getState());
+    const actor = await requireOperator();
+    return json({ ...await getState(), actor });
   } catch (error) {
     return failure(error);
   }
 }
 
 export async function POST(request: Request) {
-  let body: Record<string, unknown>;
   try {
-    body = await request.json();
-    if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("Choose a valid operation.");
-  } catch {
-    return Response.json({ error: "Send a valid JSON operation." }, { status: 400 });
-  }
-  try {
-    if (body.kind === "delay") return Response.json(await recordDelay(body.arrivalDate, body.note));
-    if (body.kind === "recovery") return Response.json(await recordRecovery(body.arrivalDate, body.note));
-    if (body.kind === "review") return Response.json(await reviewAction(body.id, body.decision, body.reviewer));
-    if (body.kind === "ask") return Response.json(await answerQuestion(body.question));
-    return Response.json({ error: "Choose delay, recovery, review, or ask." }, { status: 400 });
+    const actor = await requireOperator();
+    const body = await readJson(request);
+    if (body.kind === "ask") return json(await answerQuestion(body.question));
+    const state = body.kind === "delay" ? await recordDelay(body.arrivalDate, body.note, actor)
+      : body.kind === "recovery" ? await recordRecovery(body.arrivalDate, body.note, actor)
+      : body.kind === "review" ? await reviewAction(body.id, body.decision, actor) : null;
+    return state ? json({ ...state, actor }) : json({ error: "Choose delay, recovery, review, or ask." }, 400);
   } catch (error) {
     return failure(error);
   }

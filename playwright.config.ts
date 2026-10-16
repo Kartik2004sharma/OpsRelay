@@ -21,8 +21,9 @@ export default defineConfig({
     { name: "mobile", use: { viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true } },
   ],
   webServer: {
-    command: "OPSRELAY_ALLOW_RESET=1 FALKORDB_GRAPH=opsrelay_e2e node scripts/seed.mjs --reset && FALKORDB_GRAPH=opsrelay_e2e npm run start -- -p 3101",
-    url: "http://127.0.0.1:3101/api/ops",
+    command: "node scripts/seed.mjs --reset && npm run start -- -p 3101",
+    env: { OPSRELAY_ALLOW_RESET: "1", FALKORDB_GRAPH: "opsrelay_e2e", FALKORDB_URL: process.env.FALKORDB_TEST_URL || "falkor://127.0.0.1:6379", OPSRELAY_OPERATOR_PASSWORD: "test-only-opsrelay-password-2026", OPSRELAY_OPERATOR_NAME: "Operations lead" },
+    url: "http://127.0.0.1:3101/api/health",
     reuseExistingServer: false,
     timeout: 120_000,
   },

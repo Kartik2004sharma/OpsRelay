@@ -21,7 +21,7 @@ if (process.argv.includes("--reset")) {
 const nodes = [
   ["Supplier", { id: "SUP-01", name: "Kestrel Components" }],
   ["Component", { id: "CMP-14", name: "M14 drive motor" }],
-  ["Supply", { id: "DEL-204", quantity: 6, plannedDate: "2026-10-20", currentDate: "2026-10-20" }],
+  ["Supply", { id: "DEL-204", quantity: 6, plannedDate: "2026-10-20", currentDate: "2026-10-20", currentSourceId: "SRC-PO-204", revision: 0 }],
   ["InventoryLot", { id: "INV-01", quantity: 2, availableDate: "2026-10-15", sourceId: "SRC-STOCK-01" }],
   ["Product", { id: "PRD-A", name: "Atlas Conveyor" }],
   ["Product", { id: "PRD-B", name: "Boreal Sorter" }],

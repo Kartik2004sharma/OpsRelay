@@ -1,13 +1,14 @@
 import { randomUUID } from "node:crypto";
 import { rows, write } from "./graph";
 import { allocate } from "./allocation";
+import { ApiError } from "./http";
 
 const COMPONENT_ID = "CMP-14";
 
-type RootRow = { supplier: string; component: string; supplyId: string; supplyQuantity: number; stockQuantity: number; plannedDate: string; currentDate: string; supplierSourceId: string; stockSourceId: string };
+type RootRow = { supplier: string; component: string; supplyId: string; supplyQuantity: number; stockQuantity: number; plannedDate: string; currentDate: string; supplierSourceId: string; stockSourceId: string; currentSourceId: string | null; revision: number };
 type OrderRow = { id: string; product: string; units: number; dueDate: string; customer: string; quantity: number; bomSourceId: string; orderSourceId: string; owner: string | null; ownerSourceId: string | null };
 type SourceRow = { id: string; title: string; kind: string; body: string; recordedAt: string; status: string };
-type EventRow = { id: string; kind: string; arrivalDate: string; note: string; recordedAt: string; sourceId: string };
+type EventRow = { id: string; kind: string; arrivalDate: string; note: string; recordedAt: string; sourceId: string; recordedBy: string | null };
 type ActionRow = { id: string; orderId: string; title: string; status: string; reviewer: string | null; reviewedAt: string | null; sourceId: string };
 
 export type Impact = {
@@ -37,7 +38,8 @@ export async function getState() {
     MATCH (lot:InventoryLot)-[:FOR_COMPONENT]->(component)
     RETURN supplier.name AS supplier, component.name AS component, supply.id AS supplyId,
            supply.quantity AS supplyQuantity, lot.quantity AS stockQuantity,
-           supply.plannedDate AS plannedDate, supply.currentDate AS currentDate, link.sourceId AS supplierSourceId, lot.sourceId AS stockSourceId
+           supply.plannedDate AS plannedDate, supply.currentDate AS currentDate, link.sourceId AS supplierSourceId, lot.sourceId AS stockSourceId,
+           supply.currentSourceId AS currentSourceId, coalesce(supply.revision,0) AS revision
   `, { componentId: COMPONENT_ID }))[0];
   if (!root) throw new Error("Company graph is empty. Run the seed command first.");
 
@@ -45,10 +47,10 @@ export async function getState() {
   const events = await rows<EventRow>(`
     MATCH (event:SupplyEvent)-[:UPDATES]->(supply:Supply {id:$supplyId})
     RETURN event.id AS id, event.kind AS kind, event.arrivalDate AS arrivalDate,
-           event.note AS note, event.recordedAt AS recordedAt, event.sourceId AS sourceId
+           event.note AS note, event.recordedAt AS recordedAt, event.sourceId AS sourceId, event.recordedBy AS recordedBy
     ORDER BY event.recordedAt DESC
   `, { supplyId });
-  const currentSourceId = events[0]?.sourceId || supplierSourceId;
+  const currentSourceId = root.currentSourceId || events[0]?.sourceId || supplierSourceId;
   const orderRows = await rows<OrderRow>(`
     MATCH (component:Component {id:$componentId})<-[requirement:REQUIRES]-(product:Product)<-[:FOR_PRODUCT]-(order:Order)-[:FOR_CUSTOMER]->(customer:Customer)
     OPTIONAL MATCH (order)-[:OWNED_BY]->(person:Person)
@@ -88,16 +90,19 @@ export async function getState() {
     ORDER BY action.createdAt DESC
   `);
 
+  const revision = (await rows<{ revision: number }>("MATCH (s:Supply {id:$supplyId}) RETURN coalesce(s.revision,0) AS revision", { supplyId }))[0]?.revision;
+  if (revision !== root.revision) throw new ApiError(409, "The company graph changed. Refresh and try again.");
+
   return {
     supplier, component, componentId: COMPONENT_ID,
-    supplyId, supplyQuantity, stockQuantity, plannedDate, currentDate, currentSourceId,
+    supplyId, supplyQuantity, stockQuantity, plannedDate, currentDate, currentSourceId, revision,
     impactedCount: impacts.filter((order) => order.status === "at-risk").length,
     impacts, sources, events, actions,
     lastUpdatedAt: [...sources.map((source) => source.recordedAt), ...events.map((event) => event.recordedAt), ...actions.map((action) => action.reviewedAt)].filter((value): value is string => Boolean(value)).sort().at(-1),
   };
 }
 
-async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unknown, rawNote: unknown) {
+async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unknown, rawNote: unknown, actor: string) {
   if (!validDate(arrivalDate)) throw new Error("Enter a valid arrival date in YYYY-MM-DD format.");
   const note = typeof rawNote === "string" ? rawNote.trim().replace(/\s+/g, " ") : "";
   if (note.length < 8 || note.length > 280) throw new Error("Source note must be 8–280 characters.");
@@ -107,44 +112,39 @@ async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unkno
   const id = randomUUID();
   const sourceId = `SRC-${id}`;
   const recordedAt = new Date().toISOString();
-  await write(`
+  const allocation = allocate(before.impacts.map((order) => ({ id: order.id, dueDate: order.dueDate, required: order.required })), before.stockQuantity, before.supplyQuantity, arrivalDate);
+  const threatened = new Set(allocation.filter((order) => order.shortage > 0).map((order) => order.id));
+  const drafts = kind === "delay" ? before.impacts.filter((order) => threatened.has(order.id)).map((order) => ({ id: `${id}-${order.id}`, orderId: order.id, title: `Review ${order.id} delivery with ${order.customer}` })) : [];
+  const updated = await write<{ id: string }>(`
     MATCH (supply:Supply {id:$supplyId})
+    WHERE coalesce(supply.revision,0) = $revision
     MATCH (previous:SourceRecord {id:$previousSourceId})
+    OPTIONAL MATCH (pending:Action {status:'proposed'})
+    WITH supply, previous, collect(pending) AS pendingActions
     CREATE (source:SourceRecord {id:$sourceId, title:$title, kind:$kind, body:$note, recordedAt:$recordedAt, status:'current'})
-    CREATE (event:SupplyEvent {id:$id, kind:$kind, arrivalDate:$arrivalDate, note:$note, recordedAt:$recordedAt, sourceId:$sourceId})
+    CREATE (event:SupplyEvent {id:$id, kind:$kind, arrivalDate:$arrivalDate, note:$note, recordedAt:$recordedAt, sourceId:$sourceId, recordedBy:$actor})
     CREATE (event)-[:UPDATES]->(supply)
     CREATE (event)-[:SUPPORTED_BY]->(source)
     CREATE (previous)-[:SUPERSEDED_BY]->(source)
-    SET supply.currentDate = $arrivalDate
+    SET supply.currentDate = $arrivalDate, supply.currentSourceId = $sourceId, supply.revision = $revision + 1
     SET previous.status = 'superseded'
-    RETURN event.id
-  `, { supplyId: before.supplyId, previousSourceId: before.currentSourceId, sourceId, title: kind === "delay" ? "Supplier delay notice" : "Recovery confirmation", kind, note, recordedAt, id, arrivalDate });
-  const after = await getState();
-  if (kind === "delay") {
-    for (const order of after.impacts.filter((item) => item.status === "at-risk")) {
-      await write(`
-        MATCH (event:SupplyEvent {id:$eventId})
-        CREATE (action:Action {id:$id, orderId:$orderId, title:$title, status:'proposed', createdAt:$recordedAt, sourceId:$sourceId})
-        CREATE (action)-[:RESPONDS_TO]->(event)
-        RETURN action.id
-      `, { eventId: id, id: `${id}-${order.id}`, orderId: order.id, title: `Review ${order.id} delivery with ${order.customer}`, recordedAt, sourceId });
-    }
-  } else if (!after.impactedCount) {
-    await write(`
-      MATCH (action:Action {status:'proposed'})
-      SET action.status = 'superseded', action.reviewedAt = $recordedAt
-      RETURN action.id AS id
-    `, { recordedAt });
-  }
+    FOREACH (draft IN $drafts |
+      CREATE (action:Action {id:draft.id, orderId:draft.orderId, title:draft.title, status:'proposed', createdAt:$recordedAt, sourceId:$sourceId})
+      CREATE (action)-[:RESPONDS_TO]->(event))
+    FOREACH (action IN CASE WHEN $closePending THEN pendingActions ELSE [] END |
+      SET action.status = 'superseded', action.reviewedAt = $recordedAt)
+    RETURN event.id AS id
+  `, { supplyId: before.supplyId, revision: before.revision, previousSourceId: before.currentSourceId, sourceId, title: kind === "delay" ? "Supplier delay notice" : "Recovery confirmation", kind, note, recordedAt, id, arrivalDate, actor, drafts, closePending: kind === "recovery" && threatened.size === 0 });
+  if (!updated.length) throw new ApiError(409, "The company graph changed. Refresh and try again.");
   return getState();
 }
 
-export function recordDelay(arrivalDate: unknown, note: unknown) {
-  return recordSupplyUpdate("delay", arrivalDate, note);
+export function recordDelay(arrivalDate: unknown, note: unknown, actor: string) {
+  return recordSupplyUpdate("delay", arrivalDate, note, actor);
 }
 
-export function recordRecovery(arrivalDate: unknown, note: unknown) {
-  return recordSupplyUpdate("recovery", arrivalDate, note);
+export function recordRecovery(arrivalDate: unknown, note: unknown, actor: string) {
+  return recordSupplyUpdate("recovery", arrivalDate, note, actor);
 }
 
 export async function reviewAction(id: unknown, decision: unknown, reviewer: unknown) {
