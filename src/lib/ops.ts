@@ -1,9 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { rows, write } from "./graph";
+import { allocate } from "./allocation";
 
 const COMPONENT_ID = "CMP-14";
 
-type RootRow = { supplier: string; component: string; supplyId: string; supplyQuantity: number; stockQuantity: number; plannedDate: string; currentDate: string; supplierSourceId: string };
+type RootRow = { supplier: string; component: string; supplyId: string; supplyQuantity: number; stockQuantity: number; plannedDate: string; currentDate: string; supplierSourceId: string; stockSourceId: string };
 type OrderRow = { id: string; product: string; units: number; dueDate: string; customer: string; quantity: number; bomSourceId: string; orderSourceId: string; owner: string | null; ownerSourceId: string | null };
 type SourceRow = { id: string; title: string; kind: string; body: string; recordedAt: string; status: string };
 type EventRow = { id: string; kind: string; arrivalDate: string; note: string; recordedAt: string; sourceId: string };
@@ -29,16 +30,6 @@ function validDate(value: unknown): value is string {
   return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value;
 }
 
-export function allocate(orders: Array<{ id: string; dueDate: string; required: number }>, stock: number, supply: number, arrivalDate: string) {
-  let used = 0;
-  return [...orders].sort((a, b) => a.dueDate.localeCompare(b.dueDate) || a.id.localeCompare(b.id)).map((order) => {
-    const available = stock + (arrivalDate <= order.dueDate ? supply : 0);
-    const covered = Math.min(order.required, Math.max(0, available - used));
-    used += covered;
-    return { id: order.id, covered, shortage: order.required - covered };
-  });
-}
-
 export async function getState() {
   const root = (await rows<RootRow>(`
     MATCH (supplier:Supplier)-[link:SUPPLIES]->(component:Component {id:$componentId})
@@ -46,11 +37,18 @@ export async function getState() {
     MATCH (lot:InventoryLot)-[:FOR_COMPONENT]->(component)
     RETURN supplier.name AS supplier, component.name AS component, supply.id AS supplyId,
            supply.quantity AS supplyQuantity, lot.quantity AS stockQuantity,
-           supply.plannedDate AS plannedDate, supply.currentDate AS currentDate, link.sourceId AS supplierSourceId
+           supply.plannedDate AS plannedDate, supply.currentDate AS currentDate, link.sourceId AS supplierSourceId, lot.sourceId AS stockSourceId
   `, { componentId: COMPONENT_ID }))[0];
   if (!root) throw new Error("Company graph is empty. Run the seed command first.");
 
-  const { supplier, component, supplyId, supplyQuantity, stockQuantity, plannedDate, currentDate, supplierSourceId } = root;
+  const { supplier, component, supplyId, supplyQuantity, stockQuantity, plannedDate, currentDate, supplierSourceId, stockSourceId } = root;
+  const events = await rows<EventRow>(`
+    MATCH (event:SupplyEvent)-[:UPDATES]->(supply:Supply {id:$supplyId})
+    RETURN event.id AS id, event.kind AS kind, event.arrivalDate AS arrivalDate,
+           event.note AS note, event.recordedAt AS recordedAt, event.sourceId AS sourceId
+    ORDER BY event.recordedAt DESC
+  `, { supplyId });
+  const currentSourceId = events[0]?.sourceId || supplierSourceId;
   const orderRows = await rows<OrderRow>(`
     MATCH (component:Component {id:$componentId})<-[requirement:REQUIRES]-(product:Product)<-[:FOR_PRODUCT]-(order:Order)-[:FOR_CUSTOMER]->(customer:Customer)
     OPTIONAL MATCH (order)-[:OWNED_BY]->(person:Person)
@@ -71,36 +69,31 @@ export async function getState() {
       id, product, customer, dueDate, required: units * quantity,
       covered: result.covered, shortage: result.shortage,
       status: result.shortage ? "at-risk" : "covered", owner,
-      sourceIds: [supplierSourceId, bomSourceId, orderSourceId, ownerSourceId].filter((value): value is string => Boolean(value)),
+      sourceIds: [...new Set([currentSourceId, supplierSourceId, stockSourceId, bomSourceId, orderSourceId, ownerSourceId].filter((value): value is string => Boolean(value)))],
       path: [supplier, component, product, id, customer],
     };
   });
 
-  const sources = (await rows<SourceRow>(`
+  const sources = await rows<SourceRow>(`
     MATCH (source:SourceRecord)
     RETURN source.id AS id, source.title AS title, source.kind AS kind, source.body AS body,
            source.recordedAt AS recordedAt, source.status AS status
     ORDER BY source.id
-  `)).map((source) => source);
-  const events = (await rows<EventRow>(`
-    MATCH (event:SupplyEvent)-[:UPDATES]->(supply:Supply {id:$supplyId})
-    RETURN event.id AS id, event.kind AS kind, event.arrivalDate AS arrivalDate,
-           event.note AS note, event.recordedAt AS recordedAt, event.sourceId AS sourceId
-    ORDER BY event.recordedAt DESC
-  `, { supplyId })).map((event) => event);
-  const actions = (await rows<ActionRow>(`
+  `);
+  const actions = await rows<ActionRow>(`
     MATCH (action:Action)
     RETURN action.id AS id, action.orderId AS orderId, action.title AS title,
            action.status AS status, action.reviewer AS reviewer,
            action.reviewedAt AS reviewedAt, action.sourceId AS sourceId
     ORDER BY action.createdAt DESC
-  `)).map((action) => action);
+  `);
 
   return {
     supplier, component, componentId: COMPONENT_ID,
-    supplyId, supplyQuantity, stockQuantity, plannedDate, currentDate,
+    supplyId, supplyQuantity, stockQuantity, plannedDate, currentDate, currentSourceId,
     impactedCount: impacts.filter((order) => order.status === "at-risk").length,
     impacts, sources, events, actions,
+    lastUpdatedAt: [...sources.map((source) => source.recordedAt), ...events.map((event) => event.recordedAt), ...actions.map((action) => action.reviewedAt)].filter((value): value is string => Boolean(value)).sort().at(-1),
   };
 }
 
@@ -116,13 +109,16 @@ async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unkno
   const recordedAt = new Date().toISOString();
   await write(`
     MATCH (supply:Supply {id:$supplyId})
+    MATCH (previous:SourceRecord {id:$previousSourceId})
     CREATE (source:SourceRecord {id:$sourceId, title:$title, kind:$kind, body:$note, recordedAt:$recordedAt, status:'current'})
     CREATE (event:SupplyEvent {id:$id, kind:$kind, arrivalDate:$arrivalDate, note:$note, recordedAt:$recordedAt, sourceId:$sourceId})
     CREATE (event)-[:UPDATES]->(supply)
     CREATE (event)-[:SUPPORTED_BY]->(source)
+    CREATE (previous)-[:SUPERSEDED_BY]->(source)
     SET supply.currentDate = $arrivalDate
+    SET previous.status = 'superseded'
     RETURN event.id
-  `, { supplyId: before.supplyId, sourceId, title: kind === "delay" ? "Supplier delay notice" : "Recovery confirmation", kind, note, recordedAt, id, arrivalDate });
+  `, { supplyId: before.supplyId, previousSourceId: before.currentSourceId, sourceId, title: kind === "delay" ? "Supplier delay notice" : "Recovery confirmation", kind, note, recordedAt, id, arrivalDate });
   const after = await getState();
   if (kind === "delay") {
     for (const order of after.impacts.filter((item) => item.status === "at-risk")) {
@@ -133,6 +129,12 @@ async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unkno
         RETURN action.id
       `, { eventId: id, id: `${id}-${order.id}`, orderId: order.id, title: `Review ${order.id} delivery with ${order.customer}`, recordedAt, sourceId });
     }
+  } else if (!after.impactedCount) {
+    await write(`
+      MATCH (action:Action {status:'proposed'})
+      SET action.status = 'superseded', action.reviewedAt = $recordedAt
+      RETURN action.id AS id
+    `, { recordedAt });
   }
   return getState();
 }
@@ -164,11 +166,12 @@ export async function answerQuestion(rawQuestion: unknown) {
   if (question.length < 8 || question.length > 300) throw new Error("Enter a question of 8–300 characters.");
   const state = await getState();
   const atRisk = state.impacts.filter((order) => order.status === "at-risk");
-  const focus = /who|owner|contact|responsib/i.test(question) ? "owners" : /source|why|evidence|proof/i.test(question) ? "evidence" : "impact";
+  const focus = /who|owner|contact|responsib/i.test(question) ? "owners" : /source|why|evidence|proof/i.test(question) ? "evidence" : /impact|risk|threat|commitment|order|delay|motor|supply|recover/i.test(question) ? "impact" : "scope";
   const answer = focus === "owners"
     ? atRisk.length ? atRisk.map((order) => `${order.id}: ${order.owner || "owner not recorded"} should review the ${order.shortage}-motor shortage for ${order.customer}.`).join(" ") : "No current order shortage needs an owner response."
     : focus === "evidence"
       ? atRisk.length ? atRisk.map((order) => `${order.id} follows ${order.path.join(" → ")}; ${order.required} motors are needed and ${order.covered} are covered by its due date.`).join(" ") : "The current graph shows all seeded orders covered. Open any order to inspect its source path."
+      : focus === "scope" ? "I can trace supplier delays, order coverage, response owners, and source evidence in this company graph. Ask which commitments are at risk or who owns their response."
       : atRisk.length ? `${atRisk.length} customer commitments are at risk after the ${state.component} arrival moved to ${state.currentDate}. ${atRisk.map((order) => `${order.id} needs ${order.required} motors and is short ${order.shortage}`).join("; ")}.`
         : `All ${state.impacts.length} seeded customer commitments are covered under the current ${state.component} arrival date of ${state.currentDate}.`;
   return {

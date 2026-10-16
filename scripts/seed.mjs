@@ -1,19 +1,28 @@
 import { FalkorDB } from "falkordb";
+import assert from "node:assert/strict";
+import { loadEnvFile } from "node:process";
 
-const db = await FalkorDB.connect({ url: process.env.FALKORDB_URL || "falkor://127.0.0.1:6379" });
+try { loadEnvFile(".env.local"); } catch (error) { if (error.code !== "ENOENT") throw error; }
+
+const db = await FalkorDB.connect({ url: process.env.FALKORDB_URL || "falkor://127.0.0.1:6379", socket: { connectTimeout: 5000, reconnectStrategy: false } });
 const graphName = process.env.FALKORDB_GRAPH || "opsrelay";
 const graph = db.selectGraph(graphName);
+const exists = (await db.list()).includes(graphName);
 
 if (process.argv.includes("--reset")) {
   if (process.env.OPSRELAY_ALLOW_RESET !== "1") throw new Error("Set OPSRELAY_ALLOW_RESET=1 to delete the selected graph.");
-  if ((await db.list()).includes(graphName)) await graph.delete();
+  if (exists) await graph.delete();
+} else if (exists && (await graph.roQuery("MATCH (n) RETURN count(n) AS count")).data?.[0]?.count > 0) {
+  console.log(`Kept existing graph ${graphName} unchanged. Use the explicit reset command to replace it.`);
+  await db.close();
+  process.exit(0);
 }
 
 const nodes = [
   ["Supplier", { id: "SUP-01", name: "Kestrel Components" }],
   ["Component", { id: "CMP-14", name: "M14 drive motor" }],
   ["Supply", { id: "DEL-204", quantity: 6, plannedDate: "2026-10-20", currentDate: "2026-10-20" }],
-  ["InventoryLot", { id: "INV-01", quantity: 2, availableDate: "2026-10-15" }],
+  ["InventoryLot", { id: "INV-01", quantity: 2, availableDate: "2026-10-15", sourceId: "SRC-STOCK-01" }],
   ["Product", { id: "PRD-A", name: "Atlas Conveyor" }],
   ["Product", { id: "PRD-B", name: "Boreal Sorter" }],
   ["Order", { id: "SO-1041", quantity: 2, dueDate: "2026-10-25", sourceId: "SRC-ORDER-1041" }],
@@ -26,6 +35,7 @@ const nodes = [
   ["Person", { id: "P-02", name: "Sam Rivera", sourceId: "SRC-OWNER-2" }],
   ["Team", { id: "T-01", name: "Customer Operations" }],
   ["SourceRecord", { id: "SRC-PO-204", title: "Purchase order PO-204", kind: "purchase order", body: "Six M14 motors confirmed for 20 October 2026.", recordedAt: "2026-10-14T09:00:00Z", status: "current" }],
+  ["SourceRecord", { id: "SRC-STOCK-01", title: "M14 inventory count", kind: "inventory record", body: "Two M14 motors are available in inventory on 15 October 2026.", recordedAt: "2026-10-15T00:00:00Z", status: "current" }],
   ["SourceRecord", { id: "SRC-BOM-A", title: "Atlas bill of materials", kind: "product record", body: "Each Atlas Conveyor requires two M14 motors.", recordedAt: "2026-10-14T09:00:00Z", status: "current" }],
   ["SourceRecord", { id: "SRC-BOM-B", title: "Boreal bill of materials", kind: "product record", body: "Each Boreal Sorter requires one M14 motor.", recordedAt: "2026-10-14T09:00:00Z", status: "current" }],
   ["SourceRecord", { id: "SRC-ORDER-1041", title: "Customer order SO-1041", kind: "order", body: "Hightower Distribution ordered two Atlas Conveyors for 25 October.", recordedAt: "2026-10-14T10:00:00Z", status: "current" }],
@@ -66,5 +76,8 @@ for (const [fromLabel, fromId, edge, toLabel, toId, props] of edges) {
 }
 
 const count = (await graph.query("MATCH (n) RETURN count(n) AS count")).data?.[0]?.count;
+assert.equal(count, 25, "The synthetic baseline must contain 25 nodes.");
+const requirements = (await graph.roQuery("MATCH (o:Order)-[:FOR_PRODUCT]->(p:Product)-[r:REQUIRES]->(:Component) RETURN o.id AS id, o.quantity * r.quantity AS required ORDER BY o.id")).data;
+assert.deepEqual(requirements?.map((order) => order.required), [4, 3, 1], "Seeded orders must require 4, 3, and 1 motors.");
 console.log(`Seeded ${count} graph nodes in ${graphName}.`);
 await db.close();

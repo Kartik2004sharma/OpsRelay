@@ -19,10 +19,13 @@ try {
   browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, recordVideo: { dir: "demo", size: { width: 1280, height: 720 } }, reducedMotion: "reduce" });
   const page = await context.newPage();
-  const pause = () => page.waitForTimeout(1800);
+  const pause = () => page.waitForTimeout(3000);
   await page.goto("http://127.0.0.1:3102");
   await page.getByText("All commitments covered").waitFor();
   await pause();
+  await page.getByRole("button", { name: /Old supply planning note/i }).click();
+  await pause();
+  await page.getByRole("button", { name: "Close source record" }).click();
   await page.getByRole("button", { name: "Record supplier delay" }).click();
   await page.getByText("DISRUPTION ACTIVE").waitFor();
   await pause();
@@ -47,6 +50,8 @@ try {
   await page.locator(".update form button.primary").click();
   await page.getByText("ON SCHEDULE").waitFor();
   await page.locator(".signal").scrollIntoViewIfNeeded();
+  await pause();
+  await page.locator(".timeline").scrollIntoViewIfNeeded();
   await pause();
   const video = page.video();
   await context.close();

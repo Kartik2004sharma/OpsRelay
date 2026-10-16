@@ -12,11 +12,11 @@ The included company, people, orders, and documents are entirely synthetic. The 
 - Two Atlas Conveyors for Hightower need four motors by **25 October**. Three Boreal Sorters for Vale Foods need three by **28 October**. A later Cedar Logistics order needs one.
 - Record a delay to **5 November**. OpsRelay follows the graph and shows shortages of **two** and **three** motors for the first two orders; the later order remains covered.
 - Inspect each order's graph path and source records. Ask who is responsible or why an order is at risk. Approve or reject the proposed customer response.
-- Record recovery to **20 October**. All three commitments become covered again; prior updates and decisions remain in the graph.
+- Record recovery to **20 October**. All three commitments become covered again; open review tasks close, while prior updates and decisions remain in the graph.
 
 ## Run locally
 
-Requires Node.js 20+ and Docker. FalkorDB is the primary data store; the app has no substitute data path.
+Requires Node.js 22.6+ and Docker. FalkorDB is the primary data store; the app has no substitute data path.
 
 ```bash
 docker run -d --name opsrelay-falkordb -p 6379:6379 -p 3001:3000 -v opsrelay-falkordb-data:/data falkordb/falkordb:latest
@@ -27,13 +27,17 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). The FalkorDB browser is at [http://localhost:3001](http://localhost:3001). A managed instance also works: set `FALKORDB_URL` to its `falkor://` connection URL before seeding and starting the app. `FALKORDB_GRAPH` defaults to `opsrelay`.
 
-Seeding is idempotent on an untouched graph. To reset **only the selected graph** and remove its updates and reviews:
+For FalkorDB Cloud, put its connection URL in an ignored `.env.local` file using `.env.example` as the template. Both the app and seed command read it. Preserve the connection scheme provided by the service (`falkors://` or `rediss://` for TLS). Keep the complete URL private. The hosted app needs the same `FALKORDB_URL` and `FALKORDB_GRAPH` server environment variables.
+
+Seeding leaves an existing nonempty graph unchanged. To reset **only the selected graph** and remove its updates and reviews:
 
 ```bash
 OPSRELAY_ALLOW_RESET=1 npm run seed -- --reset
 ```
 
-Do not run the reset command against a graph containing data you need. Local smoke checks: `npm run build`, `npm run typecheck`, `npm run lint`, `npm run test:e2e`. Browser tests use a separate `opsrelay_e2e` graph and run the full workflow at desktop, tablet, and mobile sizes.
+Do not run the reset command against a graph containing data you need. Local checks: `npm test`, `npm run build`, `npm run typecheck`, `npm run lint`, `npm run test:e2e`. Browser tests use a separate `opsrelay_e2e` graph and run the full workflow at desktop, tablet, and mobile sizes. The seed asserts baseline node and motor requirement counts; the allocation tests check shortages, recovery coverage, arrival eligibility, and stable priority.
+
+For a single-container preview, build the included `Dockerfile` and serve port `10000`. It runs FalkorDB on localhost and seeds the synthetic graph on every start. This supports free ephemeral hosts such as Render; sleep, restart, or redeploy resets visitor changes. Use a persistent FalkorDB instance for lasting data.
 
 ## Graph model
 
@@ -56,6 +60,8 @@ flowchart LR
 Nodes and edges are seeded by [`scripts/seed.mjs`](scripts/seed.mjs). `SourceRecord` IDs on the supplier link, bill of materials, orders, and owner records connect each visible claim to its provenance. `SupplyEvent` and `Action` nodes retain later updates and reviews.
 
 The graph traversal that identifies connected commitments is in [`src/lib/ops.ts`](src/lib/ops.ts):
+
+The complete read-tool contracts and lifecycle queries are documented in [`docs/graph-queries.md`](docs/graph-queries.md).
 
 ```cypher
 MATCH (component:Component {id:$componentId})<-[requirement:REQUIRES]-(product:Product)
@@ -81,7 +87,7 @@ The app reads inventory and inbound supply from the graph, then allocates motors
 
 See [`demo/DEMO_SCRIPT.md`](demo/DEMO_SCRIPT.md) for the reproducible click path. The recorded video, when present, is [`demo/opsrelay-demo.mp4`](demo/opsrelay-demo.mp4). The entered track is **Company Brain**.
 
-**AI coding disclosure:** Codex assisted with planning, implementation, and QA. The participant reviewed the data model, behavior, browser results, and documentation. No AI model generates the answer shown in this version.
+**AI coding disclosure:** Codex assisted with planning, implementation, and QA. The human participant must review and understand the data model, behavior, browser results, and documentation before submission. No AI model generates the answer shown in this version.
 
 ## Why the graph matters
 

@@ -1,0 +1,2 @@
+/* Keep live timestamps out of visual comparisons while preserving layout. */
+[data-testid="graph-updated"] { visibility: hidden !important; }

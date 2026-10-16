@@ -5,6 +5,7 @@ export default defineConfig({
   timeout: 45_000,
   workers: 1,
   retries: process.env.CI ? 1 : 0,
+  expect: { toHaveScreenshot: { stylePath: "tests/browser/screenshot.css" } },
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: "http://127.0.0.1:3101",
