@@ -32,7 +32,13 @@ The fresh visual reviewer requested removal of an entry eyebrow and scored that 
 
 ## Release state
 
-The previous operator-only release at https://opsrelay.onrender.com was deployed and verified. The redesigned release must be verified there after its new commit deploys. CI and public checks for the redesigned commit are recorded below after completion.
+The redesigned application commit `18b7ca0a61c49eb9a8e67a9308f746279711ab8d` is live at https://opsrelay.onrender.com. Render deploy `dep-db92vmff3r2c73ftpdi0` finished on 16 October 2026 at 14:10 UTC. Render did not automatically start a new deploy after publication, so a cache-cleared API deployment was started after CI passed.
+
+[GitHub Actions run 38913054131](https://github.com/Kartik2004sharma/OpsRelay/actions/runs/38913054131) passed on Ubuntu with Node 22 and real FalkorDB: build, lint, allocation tests, production audit and all 18 browser cases. Linux functional checks do not compare the macOS visual baselines.
+
+Three additional public-HTTPS Playwright scenarios passed, at desktop (1280×720), tablet (768×1024) and mobile (375×812). Each checked health HTTP 200, anonymous graph denial HTTP 401, password-free demo entry, Secure/HttpOnly/SameSite Strict cookie, isolation from a second visitor, delay shortages [2,3,0], graph selection, source body, deterministic analysis, approval surviving reload, recovery, Activity navigation, page overflow, logout and absence of page runtime errors. Public graphs were left recovered and the tested primary sessions were ended. Screenshots are retained locally in `.impeccable/review/live/`.
+
+A documentation-only follow-up uses `[skip render]` so the verified application deployment remains unchanged.
 
 ## Practical limits
 

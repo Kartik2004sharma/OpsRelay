@@ -29,6 +29,6 @@ Build, TypeScript, lint, unit tests, browser checks, production audit and CI mus
 - Production build/TypeScript, lint and both allocation tests passed; production dependency audit reported zero vulnerabilities. Five development-chain vulnerabilities remain.
 - Fresh visual review requested one correction: removing the entry eyebrow. The reviewer scored it resolved after recapturing desktop, tablet and mobile. That verdict applies to the listed correction; it is not a runtime certification.
 - The separate documentation helper was unavailable; the build agent completed and parsed the actual design tokens and six component patterns locally.
-- The secured combined app/FalkorDB Docker image built successfully. Public deployment verification is recorded separately after publication.
+- The secured combined app/FalkorDB Docker image built successfully. The same application commit passed Ubuntu CI and public HTTPS workflow/isolation checks at all three viewport sizes; see verification.md.
 
 The active local checkout is `/Users/kartik/Developer/OpsRelay`. The earlier Documents checkout was retained; iCloud had offloaded dependency files there and stalled the build tools. The Developer checkout is outside that synced directory.
