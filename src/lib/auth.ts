@@ -14,7 +14,7 @@ function operator() {
   return { password, actor: process.env.OPSRELAY_OPERATOR_NAME || "Operations lead" };
 }
 
-const sessionKey = (token: string) => `${prefix()}:session:${createHmac("sha256", operator().password).update(token).digest("hex")}`;
+const sessionKey = (token: string) => `${prefix()}:session:v2:${createHmac("sha256", operator().password).update(token).digest("hex")}`;
 
 export async function limit(key: string, count: number, seconds: number) {
   const connection = await (await database()).connection;
@@ -31,22 +31,29 @@ export async function signIn(password: unknown, secure: boolean) {
   if (typeof password !== "string" || !timingSafeEqual(Buffer.from(digest(password), "hex"), Buffer.from(digest(config.password), "hex"))) {
     throw new ApiError(401, "The operator password is incorrect.");
   }
-  const token = randomBytes(32).toString("hex");
-  const connection = await (await database()).connection;
-  await connection.set(sessionKey(token), config.actor, { EX: SESSION_SECONDS });
-  (await cookies()).set(COOKIE, token, { httpOnly: true, secure, sameSite: "strict", path: "/", maxAge: SESSION_SECONDS });
+  await createSession({ actor: config.actor, graphName: process.env.FALKORDB_GRAPH || "opsrelay", demo: false }, secure);
   return config.actor;
 }
 
-export async function requireOperator() {
+export type Session = { actor: string; graphName: string; demo: boolean };
+
+export async function createSession(session: Session, secure: boolean) {
+  const seconds = session.demo ? 3600 : SESSION_SECONDS;
+  const token = randomBytes(32).toString("hex");
+  const connection = await (await database()).connection;
+  await connection.set(sessionKey(token), JSON.stringify(session), { EX: seconds });
+  (await cookies()).set(COOKIE, token, { httpOnly: true, secure, sameSite: "strict", path: "/", maxAge: seconds });
+}
+
+export async function requireSession(): Promise<Session> {
   operator();
   const token = (await cookies()).get(COOKIE)?.value || "";
-  if (!/^[a-f0-9]{64}$/.test(token)) throw new ApiError(401, "Sign in to access the company workspace.");
+  if (!/^[a-f0-9]{64}$/.test(token)) throw new ApiError(401, "Open a demo or sign in to access the workspace.");
   const connection = await (await database()).connection;
-  const actor = await connection.get(sessionKey(token));
-  if (!actor) throw new ApiError(401, "Your session expired. Please sign in again.");
+  const value = await connection.get(sessionKey(token));
+  if (!value) throw new ApiError(401, "Your session expired. Open a fresh demo or sign in again.");
   await limit(token, 120, 60);
-  return actor;
+  return JSON.parse(value);
 }
 
 export async function signOut() {

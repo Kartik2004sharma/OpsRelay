@@ -114,7 +114,7 @@ async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unkno
   const recordedAt = new Date().toISOString();
   const allocation = allocate(before.impacts.map((order) => ({ id: order.id, dueDate: order.dueDate, required: order.required })), before.stockQuantity, before.supplyQuantity, arrivalDate);
   const threatened = new Set(allocation.filter((order) => order.shortage > 0).map((order) => order.id));
-  const drafts = kind === "delay" ? before.impacts.filter((order) => threatened.has(order.id)).map((order) => ({ id: `${id}-${order.id}`, orderId: order.id, title: `Review ${order.id} delivery with ${order.customer}` })) : [];
+  const drafts = before.impacts.filter((order) => threatened.has(order.id)).map((order) => ({ id: `${id}-${order.id}`, orderId: order.id, title: `Review ${order.id} delivery with ${order.customer}` }));
   const updated = await write<{ id: string }>(`
     MATCH (supply:Supply {id:$supplyId})
     WHERE coalesce(supply.revision,0) = $revision
@@ -134,7 +134,7 @@ async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unkno
     FOREACH (action IN CASE WHEN $closePending THEN pendingActions ELSE [] END |
       SET action.status = 'superseded', action.reviewedAt = $recordedAt)
     RETURN event.id AS id
-  `, { supplyId: before.supplyId, revision: before.revision, previousSourceId: before.currentSourceId, sourceId, title: kind === "delay" ? "Supplier delay notice" : "Recovery confirmation", kind, note, recordedAt, id, arrivalDate, actor, drafts, closePending: kind === "recovery" && threatened.size === 0 });
+  `, { supplyId: before.supplyId, revision: before.revision, previousSourceId: before.currentSourceId, sourceId, title: kind === "delay" ? "Supplier delay notice" : "Recovery confirmation", kind, note, recordedAt, id, arrivalDate, actor, drafts, closePending: true });
   if (!updated.length) throw new ApiError(409, "The company graph changed. Refresh and try again.");
   return getState();
 }

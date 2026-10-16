@@ -14,9 +14,10 @@ test("supplier delay to reviewed action and recovery stays graph-backed", async 
   page.on("console", (message) => { if (message.type() === "error" && !message.text().includes("401 (Unauthorized)")) errors.push(message.text()); });
 
   await page.goto("/");
+  await page.getByRole("button", { name: "Operator sign in", exact: true }).click();
   await page.getByLabel("Operator password").fill("test-only-opsrelay-password-2026");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await expect(page.getByRole("heading", { name: /Know what a delay/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Supply overview" })).toBeVisible();
   await expect(page.getByText("All commitments covered")).toBeVisible();
   await expect(page.getByRole("button", { name: /SO-1041 Hightower Distribution/i })).toBeVisible();
   await page.getByRole("button", { name: /Old supply planning note/i }).click();
@@ -31,6 +32,7 @@ test("supplier delay to reviewed action and recovery stays graph-backed", async 
   await page.getByRole("button", { name: /SO-1041 Hightower Distribution/i }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   // shortcut: visual baselines are macOS-only; Linux CI checks behavior and accessibility.
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   if (process.platform === "darwin") await expect(page).toHaveScreenshot("baseline.png", { fullPage: true });
   const unsupported = await page.request.post("/api/ops", { data: { kind: "ask", question: "What should we eat for lunch?" } });
   expect((await unsupported.json()).answer).toContain("I can trace supplier delays");
@@ -46,6 +48,7 @@ test("supplier delay to reviewed action and recovery stays graph-backed", async 
   await expect(page.getByRole("dialog")).toContainText("Supplier delay notice");
   await expect(page.getByRole("dialog")).toContainText("current");
   await page.getByRole("button", { name: "Close source record" }).click();
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   if (process.platform === "darwin") await expect(page).toHaveScreenshot("disruption.png", { fullPage: true });
 
   await page.getByRole("button", { name: /SO-1042 Vale Foods/i }).click();
@@ -70,8 +73,8 @@ test("supplier delay to reviewed action and recovery stays graph-backed", async 
   await expect(page.getByText("ON SCHEDULE")).toBeVisible();
   await expect(page.getByRole("button", { name: /SO-1041 Hightower Distribution/i })).toContainText("Covered");
   await expect(page.getByText("Recovery confirmed")).toBeVisible();
-  await expect(page.getByText("Closed after recovery")).toBeVisible();
-  await expect(page.getByText("OPEN REVIEW TASKS").locator("..")).toContainText("00");
+  await expect(page.getByText("Closed after supply update")).toBeVisible();
+  await expect(page.getByText("0 open review tasks", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "View source" }).click();
   await expect(page.getByRole("dialog")).toContainText("Recovery confirmation");
   await page.getByRole("button", { name: "Close source record" }).click();

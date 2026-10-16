@@ -4,11 +4,13 @@
 
 [Live secured demo](https://opsrelay.onrender.com) · [Demo video](demo/opsrelay-demo.mp4) · [Verification](docs/verification.md)
 
-The free demo requires the operator password, supplied privately by the project owner. It can take about a minute to wake and resets graph updates after restart.
+Click **Explore live demo** to open a separate synthetic FalkorDB workspace without a password. Your demo changes cannot alter another visitor’s graph or the operator workspace. Sessions last one hour; free hosting can reset them earlier. Operator sign-in remains available for the protected workspace.
 
 OpsRelay answers an operations team's practical question: *if a supplier misses a date, which customer commitments break, why, and who should respond?* It follows relationships from supplier to component, product, order, customer, and owner in **FalkorDB**. A delay changes the graph, recalculates shortages, creates review tasks, and leaves the source trail visible. Recovery changes the answer without erasing the history.
 
 The included company, people, orders, and documents are entirely synthetic. The analysis is deterministic and graph-grounded; the interface identifies it as such. There is no LLM or external company integration in this version.
+
+![OpsRelay supply workspace](demo/opsrelay-dashboard.png)
 
 ## Working scenario
 
@@ -40,7 +42,7 @@ Seeding leaves an existing nonempty graph unchanged. To reset **only the selecte
 OPSRELAY_ALLOW_RESET=1 npm run seed -- --reset
 ```
 
-Do not run the reset command against a graph containing data you need. Local checks: `npm test`, `npm run build`, `npm run typecheck`, `npm run lint`, `npm run test:e2e`. Browser tests use a separate `opsrelay_e2e` graph and run the full workflow at desktop, tablet, and mobile sizes. The seed asserts baseline node and motor requirement counts; the allocation tests check shortages, recovery coverage, arrival eligibility, and stable priority.
+Do not run the reset command against a graph containing data you need. Local checks: `npm test`, `npm run build`, `npm run typecheck`, `npm run lint`, `npm run test:e2e`. Browser tests use a separate `opsrelay_e2e` graph plus disposable demo graphs and run workflow, security, recovery and isolation checks at desktop, tablet, and mobile sizes. The seed asserts baseline node and motor requirement counts; the allocation tests check shortages, recovery coverage, arrival eligibility, and stable priority.
 
 For a single-container preview, build the included `Dockerfile` and serve port `10000`, passing the operator password as a runtime environment variable. It runs FalkorDB on localhost and seeds the synthetic graph on every start. This supports free ephemeral hosts such as Render; sleep, restart, or redeploy resets visitor changes. Use a persistent FalkorDB instance for lasting data.
 
@@ -84,9 +86,9 @@ The app reads inventory and inbound supply from the graph, then allocates motors
 ## Architecture and boundaries
 
 - Next.js 16 App Router UI and route handler; FalkorDB JavaScript client runs on the server.
-- `GET /api/ops` reads the current graph. `POST /api/ops` records delay, recovery, or review, or returns deterministic question analysis. Inputs are validated and Cypher values are passed as parameters.
+- `GET /api/ops` reads the graph assigned to the current session. `POST /api/ops` records delay, recovery, or review, or returns deterministic question analysis. Inputs are validated and Cypher values are passed as parameters.
 - Customer communication is a **draft review task**. Approval records a human decision; OpsRelay does not send messages to customers.
-- The workspace uses one synthetic graph and one operator identity. All graph access requires sign-in. See [security and deployment boundaries](docs/SECURITY.md) before hosting.
+- The protected workspace uses one operator identity. Public demos use separate temporary graphs selected from server-side sessions. See [security and deployment boundaries](docs/SECURITY.md) before hosting.
 
 ## Demo and submission
 
@@ -101,3 +103,7 @@ The same M14 component is shared by multiple products and orders. A single suppl
 ## Verification and release
 
 GitHub Actions runs allocation tests, ESLint, the production dependency audit, a production build, and browser workflow/security checks against real FalkorDB. Visual baselines are compared on macOS; Linux CI checks functionality and accessibility. See [observed verification results](docs/verification.md).
+
+## Repair loop
+
+The [bounded repair record](docs/REPAIR_LOOP.md) describes the reported access failure, fixes and verification gates. The modern control-tower interface includes a query-backed dependency map, visible mobile navigation and explicit update feedback.

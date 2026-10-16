@@ -1,4 +1,7 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { FalkorDB } from "falkordb";
+
+export const graphScope = new AsyncLocalStorage<string>();
 
 let clientPromise: ReturnType<typeof FalkorDB.connect> | undefined;
 
@@ -23,7 +26,7 @@ export async function database() {
 }
 
 export async function graph() {
-  return (await database()).selectGraph(process.env.FALKORDB_GRAPH || "opsrelay");
+  return (await database()).selectGraph(graphScope.getStore() || process.env.FALKORDB_GRAPH || "opsrelay");
 }
 
 export async function rows<T extends Record<string, unknown>>(cypher: string, params = {}) {

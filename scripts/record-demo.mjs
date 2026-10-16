@@ -25,6 +25,7 @@ try {
   const page = await context.newPage();
   const pause = () => page.waitForTimeout(3000);
   await page.goto("http://127.0.0.1:3102");
+  await page.getByRole("button", { name: "Operator sign in", exact: true }).click();
   await page.getByLabel("Operator password").fill(process.env.OPSRELAY_OPERATOR_PASSWORD);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await page.getByText("All commitments covered").waitFor();
@@ -55,7 +56,7 @@ try {
   await page.getByLabel("Source note").fill("Kestrel confirmed the original shipment date has been restored.");
   await page.locator(".update form button.primary").click();
   await page.getByText("ON SCHEDULE").waitFor();
-  await page.locator(".signal").scrollIntoViewIfNeeded();
+  await page.locator(".network").scrollIntoViewIfNeeded();
   await pause();
   await page.locator(".timeline").scrollIntoViewIfNeeded();
   await pause();

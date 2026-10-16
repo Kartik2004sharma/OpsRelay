@@ -1,0 +1,2 @@
+# Supply operations surface
+Mode: Operate. User delegates visual direction and code-first build. First viewport: source-to-order dependency map, current coverage and a supply-update form. Entry offers an isolated live demo without a password, with operator sign-in secondary. Signature interaction: selecting a connected order reveals its current evidence and owner; a dated update recalculates coverage and review tasks. Risk: small network must remain legible on phones via a contained scroll and equivalent order list. No static mock graph or fake generated answer.

@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T14:05:11.147466+00:00",
+  "title": "Design System: OpsRelay",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Primary",
+        "canonical": "#315bd6",
+        "tonalRamp": [
+          "oklch(15% 0.17 265)",
+          "oklch(25% 0.17 265)",
+          "oklch(35% 0.17 265)",
+          "oklch(45% 0.17 265)",
+          "oklch(55% 0.17 265)",
+          "oklch(65% 0.17 265)",
+          "oklch(80% 0.17 265)",
+          "oklch(95% 0.17 265)"
+        ]
+      },
+      "primary-soft": {
+        "role": "primary",
+        "displayName": "Primary Soft",
+        "canonical": "#eef2ff",
+        "tonalRamp": [
+          "oklch(15% 0.17 265)",
+          "oklch(25% 0.17 265)",
+          "oklch(35% 0.17 265)",
+          "oklch(45% 0.17 265)",
+          "oklch(55% 0.17 265)",
+          "oklch(65% 0.17 265)",
+          "oklch(80% 0.17 265)",
+          "oklch(95% 0.17 265)"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Background",
+        "canonical": "#f6f7f9",
+        "tonalRamp": [
+          "oklch(15% 0.02 265)",
+          "oklch(25% 0.02 265)",
+          "oklch(35% 0.02 265)",
+          "oklch(45% 0.02 265)",
+          "oklch(55% 0.02 265)",
+          "oklch(65% 0.02 265)",
+          "oklch(80% 0.02 265)",
+          "oklch(95% 0.02 265)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0.02 265)",
+          "oklch(25% 0.02 265)",
+          "oklch(35% 0.02 265)",
+          "oklch(45% 0.02 265)",
+          "oklch(55% 0.02 265)",
+          "oklch(65% 0.02 265)",
+          "oklch(80% 0.02 265)",
+          "oklch(95% 0.02 265)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#202632",
+        "tonalRamp": [
+          "oklch(15% 0.02 265)",
+          "oklch(25% 0.02 265)",
+          "oklch(35% 0.02 265)",
+          "oklch(45% 0.02 265)",
+          "oklch(55% 0.02 265)",
+          "oklch(65% 0.02 265)",
+          "oklch(80% 0.02 265)",
+          "oklch(95% 0.02 265)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#606a7a",
+        "tonalRamp": [
+          "oklch(15% 0.02 265)",
+          "oklch(25% 0.02 265)",
+          "oklch(35% 0.02 265)",
+          "oklch(45% 0.02 265)",
+          "oklch(55% 0.02 265)",
+          "oklch(65% 0.02 265)",
+          "oklch(80% 0.02 265)",
+          "oklch(95% 0.02 265)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "#e4e7ed",
+        "tonalRamp": [
+          "oklch(15% 0.02 265)",
+          "oklch(25% 0.02 265)",
+          "oklch(35% 0.02 265)",
+          "oklch(45% 0.02 265)",
+          "oklch(55% 0.02 265)",
+          "oklch(65% 0.02 265)",
+          "oklch(80% 0.02 265)",
+          "oklch(95% 0.02 265)"
+        ]
+      },
+      "success": {
+        "role": "neutral",
+        "displayName": "Success",
+        "canonical": "#287553",
+        "tonalRamp": [
+          "oklch(15% 0.08 150)",
+          "oklch(25% 0.08 150)",
+          "oklch(35% 0.08 150)",
+          "oklch(45% 0.08 150)",
+          "oklch(55% 0.08 150)",
+          "oklch(65% 0.08 150)",
+          "oklch(80% 0.08 150)",
+          "oklch(95% 0.08 150)"
+        ]
+      },
+      "success-bg": {
+        "role": "neutral",
+        "displayName": "Success Bg",
+        "canonical": "#edf7f0",
+        "tonalRamp": [
+          "oklch(15% 0.08 150)",
+          "oklch(25% 0.08 150)",
+          "oklch(35% 0.08 150)",
+          "oklch(45% 0.08 150)",
+          "oklch(55% 0.08 150)",
+          "oklch(65% 0.08 150)",
+          "oklch(80% 0.08 150)",
+          "oklch(95% 0.08 150)"
+        ]
+      },
+      "warning": {
+        "role": "neutral",
+        "displayName": "Warning",
+        "canonical": "#96540a",
+        "tonalRamp": [
+          "oklch(15% 0.1 70)",
+          "oklch(25% 0.1 70)",
+          "oklch(35% 0.1 70)",
+          "oklch(45% 0.1 70)",
+          "oklch(55% 0.1 70)",
+          "oklch(65% 0.1 70)",
+          "oklch(80% 0.1 70)",
+          "oklch(95% 0.1 70)"
+        ]
+      },
+      "warning-bg": {
+        "role": "neutral",
+        "displayName": "Warning Bg",
+        "canonical": "#fff5e6",
+        "tonalRamp": [
+          "oklch(15% 0.1 70)",
+          "oklch(25% 0.1 70)",
+          "oklch(35% 0.1 70)",
+          "oklch(45% 0.1 70)",
+          "oklch(55% 0.1 70)",
+          "oklch(65% 0.1 70)",
+          "oklch(80% 0.1 70)",
+          "oklch(95% 0.1 70)"
+        ]
+      }
+    },
+    "shadows": [
+      {
+        "name": "graph-node",
+        "value": "0 3px 6px #273d6010",
+        "purpose": "Separate dependency nodes from the chart ground."
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-state",
+        "value": "160ms",
+        "purpose": "Color and border state changes; disabled for reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "1200",
+        "value": "1200px"
+      },
+      {
+        "name": "1000",
+        "value": "1000px"
+      },
+      {
+        "name": "800",
+        "value": "800px"
+      },
+      {
+        "name": "600",
+        "value": "600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The primary operation in a group.",
+      "html": "<button class=\"ds-primary\">Record update</button>",
+      "css": ".ds-primary{font:550 12px Geist,sans-serif;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer;transition:background-color .16s;background:var(--accent,#315bd6);color:#fff;border:1px solid var(--accent,#315bd6)}.ds-primary:hover{background:#244bbd}.ds-primary:focus-visible{outline:3px solid #91a9fa;outline-offset:3px}.ds-primary:disabled{opacity:.55;cursor:wait}"
+    },
+    {
+      "name": "Secondary button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Refresh and secondary actions.",
+      "html": "<button class=\"ds-secondary\">Refresh</button>",
+      "css": ".ds-secondary{font:550 12px Geist,sans-serif;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer;transition:background-color .16s;background:#fff;color:#3b475b;border:1px solid #dce1e9}.ds-secondary:hover{background:#f5f7fb;border-color:#c1cbdc}.ds-secondary:focus-visible{outline:3px solid #91a9fa;outline-offset:3px}"
+    },
+    {
+      "name": "Text field",
+      "kind": "input",
+      "description": "Native form controls for supply data.",
+      "html": "<label class=\"ds-label\">Source note<input class=\"ds-input\" value=\"Supplier confirmed a new date\"></label>",
+      "css": ".ds-label{font:550 11px Geist,sans-serif;color:#49566a;display:grid;gap:7px}.ds-input{font:12px Geist,sans-serif;padding:10px 11px;border:1px solid #d8dee8;border-radius:6px;color:#27344c;background:#fff;caret-color:#315bd6}.ds-input:hover{border-color:#b0bdd4}.ds-input:focus-visible{outline:3px solid #91a9fa;outline-offset:3px}"
+    },
+    {
+      "name": "Navigation item",
+      "kind": "nav",
+      "description": "Current workspace destination.",
+      "html": "<a class=\"ds-nav\" href=\"#overview\" aria-current=\"location\">Overview</a>",
+      "css": ".ds-nav{display:block;font:600 12px Geist,sans-serif;padding:10px;border-radius:6px;background:#eef2ff;color:#315bd6;text-decoration:none}.ds-nav:hover{background:#e3eaff}.ds-nav:focus-visible{outline:3px solid #91a9fa;outline-offset:3px}"
+    },
+    {
+      "name": "Status badge",
+      "kind": "chip",
+      "description": "Covered or shortage state, always with text.",
+      "html": "<span class=\"ds-badge\">2 short</span>",
+      "css": ".ds-badge{display:inline-flex;font:600 10px Geist,sans-serif;line-height:1.4;padding:4px 7px;border-radius:4px;background:#fff5e6;color:#96540a}"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "A bordered task or evidence section.",
+      "html": "<section class=\"ds-panel\"><h2>Customer commitments</h2><p>3 orders traced</p></section>",
+      "css": ".ds-panel{font:14px Geist,sans-serif;color:#202632;background:#fff;border:1px solid #e4e7ed;border-radius:9px;padding:20px}.ds-panel h2{font-size:16px;font-weight:650;margin:0 0 8px}.ds-panel p{font-size:12px;color:#606a7a;margin:0}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Control tower",
+    "overview": "A light control-tower workspace gives priority to connected commitments, current supply facts and the next review decision. Compact type, disciplined rules and a restrained blue action color keep the operational task legible.",
+    "keyCharacteristics": [
+      "Compact, factual task hierarchy.",
+      "Clear relationship paths and chronological evidence.",
+      "Consistent native controls and visible state feedback."
+    ],
+    "rules": [
+      {
+        "name": "The State Text Rule",
+        "body": "Every semantic color is paired with readable text.",
+        "section": "colors"
+      },
+      {
+        "name": "The Decision Trail Rule",
+        "body": "A supply update changes current coverage while preserving dated source records and reviewed decisions.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Use actual graph results for relationships and statuses.",
+      "Use visible text alongside semantic state colors.",
+      "Keep mobile navigation and equivalent order controls accessible."
+    ],
+    "donts": [
+      "Do not add decorative eyebrows above headings.",
+      "Do not use color alone to communicate risk.",
+      "Do not hide core actions behind operator credentials when showing the synthetic demo."
+    ]
+  }
+}

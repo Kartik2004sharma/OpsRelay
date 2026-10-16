@@ -1,51 +1,43 @@
 # Verification record — 16 October 2026
 
-## Observed results
+## Redesigned release: local evidence
 
-| Check | Result |
+| Check | Observed result |
 | --- | --- |
-| Fresh Next.js production build and TypeScript compilation | Passed |
+| Fresh Next.js production build and TypeScript | Passed |
 | ESLint | Passed |
 | Allocation tests | 2 passed |
-| Playwright production-server workflow and security checks | 6 passed in 16.5 seconds |
+| Final Playwright run without snapshot updates | 18 passed in 41.3 seconds |
 | Viewports | 1280×720 desktop, 768×1024 tablet, 375×812 mobile |
-| Axe scan | No serious or critical violations in the open source dialog or recovered dashboard |
-| Browser runtime and console errors | None during the tested workflow |
-| Database unavailable | HTTP 503 with a useful error when connecting to an unused local port |
-| Single-container smoke check | Baseline → delay shortages [2,3,0] → approval → recovery passed under a 512 MB container limit |
+| Visual comparisons | Six macOS baseline/disruption comparisons passed |
+| Axe scans | No serious or critical violations in the tested source dialog and recovered operator dashboard |
+| Workflow runtime/console errors | None during the tested operator workflow |
+| Combined Docker image | Built successfully |
+| 512 MB Docker smoke check | Public demo → delay [2,3,0] → Demo reviewer approval → recovery passed |
 | Production dependency audit | 0 reported vulnerabilities |
+| Full development audit | Five high entries in the ESLint glob dependency chain remain |
+| Demo recording | Updated H.264, 1280×720, 31.00 seconds, 807,922 bytes |
 
-The browser workflow inspects the superseded planning note, closes the native dialog with Escape, checks the missing-owner warning, records a delay, inspects the current source and product evidence, asks a graph question, approves a task, reloads to verify persistence, and records recovery. It checks that open tasks close after recovery. It also checks unsupported-question handling, invalid-date rejection, horizontal overflow, and baseline/disruption screenshots. Live timestamps are hidden only during screenshot comparisons.
+## Functional coverage
 
-The seed asserts 25 baseline nodes and motor requirements of 4, 3, and 1. A normal seed invocation leaves an existing nonempty graph unchanged. Browser resets target only the disposable `opsrelay_e2e` graph.
+Password-free demo entry; separate visitor graphs and protected operator graph; incorrect password; network failure and retry; mobile/tablet navigation; source dialog Escape and focus restoration; page overflow; expired session; expired demo graph cleanup; preservation of the operator graph during cleanup; 40-demo capacity bound; multi-hop evidence; missing owner; superseded planning source; valid/invalid dates; repeated delays; partial recovery; current-proposal replacement; approvals and rejections retained; repeated-review rejection; anonymous API denial; origin/body boundaries; concurrent updates; server-assigned reviewer; logout revocation and rate limiting.
 
-Security checks verify anonymous denial, invalid login, cross-origin and malformed-origin rejection, oversized-body rejection, cookie flags, cache/security headers, competing supply updates, server-assigned reviewer identity, logout revocation, and login throttling. These run for all three viewport projects.
+Test graph resets target only `opsrelay_e2e`. Temporary demo graphs are collected by test cleanup. Synthetic seed assertions check 25 nodes and requirements [4,3,1]. Tests do not reset the live operator graph.
 
-## Repair notes
+## Repair evidence
 
-- FalkorDB remains external to Next.js bundling to avoid a runtime JSBI failure.
-- The recovery test targets the form submit button rather than the mode selector.
-- Low-contrast labels and source-dialog metadata were darkened and checked with Axe.
-- Random source IDs have readable button labels; the full IDs remain in source details.
-- Screenshot-only CSS hides changing timestamps. A fresh production build was used for the final run after an incremental CSS cache retained old colors.
-- The single-container entrypoint explicitly starts OpsRelay, avoiding the base image's browser process on the app's HTTP port.
+See [the bounded repair record](REPAIR_LOOP.md). The first inspection exposed low-contrast coverage numbers and a locator matching Next.js's hidden announcer. Correction and confirmation runs followed. Event timestamps are hidden only during visual comparisons; runtime timestamps remain visible. All final macOS baseline comparisons passed without updating snapshots.
 
-## Remaining limits
+The fresh visual reviewer requested removal of an entry eyebrow and scored that correction resolved after the same three entry views were recaptured. The documentation helper could not finish; actual code tokens and component patterns were documented and parsed locally in DESIGN.md and .impeccable/design.json.
 
-The full development dependency audit reports five high-severity entries in the ESLint → fast-glob → micromatch → braces chain. npm's proposed force fix downgrades eslint-config-next across major versions, so it was not applied. Production dependencies report zero vulnerabilities.
+## Release state
 
-The user approved free Render in My Workspace. Service `srv-db8tr7ff3r2c73fdbbg0` deployed application commit `0ac3917d4c9dc98f5887b0b4b31686f039b09dc9` at https://opsrelay.onrender.com. Real FalkorDB runs inside the app container, bound to loopback. No paid service or FalkorDB Cloud instance was provisioned. Railway was not used because its trial had expired. The updated secured Docker image passed readiness, anonymous denial, sign-in, delay shortages [2,3,0], server-assigned reviewer, and recovery under a 512 MB limit on local Mac/ARM64. Render deployed the same application commit on its remote Docker runtime.
+The previous operator-only release at https://opsrelay.onrender.com was deployed and verified. The redesigned release must be verified there after its new commit deploys. CI and public checks for the redesigned commit are recorded below after completion.
 
-Answers currently use labelled deterministic graph analysis. No LLM API integration, real ERP data, external customer messaging, or hackathon submission has been performed.
+## Practical limits
 
-## Live verification
+The user authorized free Render in My Workspace. Real FalkorDB runs on container loopback. Free-host sleep/restart loses in-container graphs and sessions. Demo sessions expire after one hour and graph cleanup is lazy on the next creation. The platform's custom HTTP health-check path is not configured; independently fetch `/api/health` before announcing readiness.
 
-On 16 October 2026, automated Playwright checks against the public HTTPS deployment confirmed health HTTP 200, anonymous graph access HTTP 401, UI sign-in, Secure/HttpOnly/SameSite Strict cookies, delay shortages [2,3,0], approval surviving reload, recovery to covered commitments, and sign-out revocation. No page runtime errors were observed. The checked graph was left recovered, with its synthetic verification history retained.
+No load test, backup restore exercise, high availability, independent penetration test, SSO or real ERP integration has been completed. Analysis is labelled deterministic and no customer message is sent. This is a secured synthetic-data pilot, not an industry certification.
 
-GitHub Actions run https://github.com/Kartik2004sharma/OpsRelay/actions/runs/38872696151 passed on Ubuntu with Node 22 and real FalkorDB: allocation tests, lint, production audit, production build, and six browser tests. Linux does not compare the macOS visual baselines.
-
-The public health endpoint was independently fetched and returned `{"status":"ready"}`. Render's custom HTTP health-check path is not configured; platform readiness alone should not be treated as graph readiness. Always check `/api/health` when verifying a release.
-
-Free Render sleeps after idle periods and loses the in-container graph and sessions on restart. No backups, restore exercise, high availability, load test, independent penetration test, SSO, or tenant isolation has been verified. This is a secured hackathon pilot, not an industry certification. See https://render.com/docs/free.
-
-The documentation-only publication commit uses Render's documented `[skip render]` marker to retain the already verified application deployment: https://render.com/docs/deploys#skipping-an-auto-deploy.
+The active checkout is `/Users/kartik/Developer/OpsRelay`, moved outside the iCloud-synced Documents area after dependency files were offloaded and builds stalled. The earlier checkout is retained.

@@ -1,2 +1,2 @@
 /* Keep live timestamps out of visual comparisons while preserving layout. */
-[data-testid="graph-updated"] { visibility: hidden !important; }
+[data-testid="graph-updated"], [data-testid="event-time"] { visibility: hidden !important; }
