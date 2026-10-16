@@ -4,7 +4,7 @@
 - **Track:** Company Brain
 - **Repository:** https://github.com/Kartik2004sharma/OpsRelay
 - **Working demo recording:** https://github.com/Kartik2004sharma/OpsRelay/blob/main/demo/opsrelay-demo.mp4
-- **Live deployment:** pending FalkorDB Cloud setup and live verification.
+- **Live deployment:** https://opsrelay.onrender.com — verified 16 October 2026. Operator sign-in required; request access privately. Free Render hosting is ephemeral and can sleep.
 - **Local setup:** follow README.md; Docker and Node.js 22.6+ are required.
 
 OpsRelay connects suppliers, components, products, customer orders, staff, and source records in FalkorDB. Recording a motor delay exposes two customer shortages, explains the connected path, identifies the responsible people, and creates tasks for human review. Recovery changes the current answer while retaining superseded records and past decisions.

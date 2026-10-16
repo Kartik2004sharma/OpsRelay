@@ -2,6 +2,10 @@
 
 **Graph Hacks 2026 · Company Brain track**
 
+[Live secured demo](https://opsrelay.onrender.com) · [Demo video](demo/opsrelay-demo.mp4) · [Verification](docs/verification.md)
+
+The free demo requires the operator password, supplied privately by the project owner. It can take about a minute to wake and resets graph updates after restart.
+
 OpsRelay answers an operations team's practical question: *if a supplier misses a date, which customer commitments break, why, and who should respond?* It follows relationships from supplier to component, product, order, customer, and owner in **FalkorDB**. A delay changes the graph, recalculates shortages, creates review tasks, and leaves the source trail visible. Recovery changes the answer without erasing the history.
 
 The included company, people, orders, and documents are entirely synthetic. The analysis is deterministic and graph-grounded; the interface identifies it as such. There is no LLM or external company integration in this version.

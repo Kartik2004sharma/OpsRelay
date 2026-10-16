@@ -34,6 +34,18 @@ Security checks verify anonymous denial, invalid login, cross-origin and malform
 
 The full development dependency audit reports five high-severity entries in the ESLint → fast-glob → micromatch → braces chain. npm's proposed force fix downgrades eslint-config-next across major versions, so it was not applied. Production dependencies report zero vulnerabilities.
 
-No hosted FalkorDB connection or live application deployment has been verified. Railway rejected new project creation because its trial had expired. The user chose to wait for FalkorDB Cloud setup; no Render service or paid hosting plan was created. The updated secured Docker image passed readiness, anonymous denial, sign-in, delay shortages [2,3,0], server-assigned reviewer, and recovery under a 512 MB limit on local Mac/ARM64. Remote AMD64 hosting remains unchecked until deployment completes.
+The user approved free Render in My Workspace. Service `srv-db8tr7ff3r2c73fdbbg0` deployed application commit `0ac3917d4c9dc98f5887b0b4b31686f039b09dc9` at https://opsrelay.onrender.com. Real FalkorDB runs inside the app container, bound to loopback. No paid service or FalkorDB Cloud instance was provisioned. Railway was not used because its trial had expired. The updated secured Docker image passed readiness, anonymous denial, sign-in, delay shortages [2,3,0], server-assigned reviewer, and recovery under a 512 MB limit on local Mac/ARM64. Render deployed the same application commit on its remote Docker runtime.
 
 Answers currently use labelled deterministic graph analysis. No LLM API integration, real ERP data, external customer messaging, or hackathon submission has been performed.
+
+## Live verification
+
+On 16 October 2026, automated Playwright checks against the public HTTPS deployment confirmed health HTTP 200, anonymous graph access HTTP 401, UI sign-in, Secure/HttpOnly/SameSite Strict cookies, delay shortages [2,3,0], approval surviving reload, recovery to covered commitments, and sign-out revocation. No page runtime errors were observed. The checked graph was left recovered, with its synthetic verification history retained.
+
+GitHub Actions run https://github.com/Kartik2004sharma/OpsRelay/actions/runs/38872696151 passed on Ubuntu with Node 22 and real FalkorDB: allocation tests, lint, production audit, production build, and six browser tests. Linux does not compare the macOS visual baselines.
+
+The public health endpoint was independently fetched and returned `{"status":"ready"}`. Render's custom HTTP health-check path is not configured; platform readiness alone should not be treated as graph readiness. Always check `/api/health` when verifying a release.
+
+Free Render sleeps after idle periods and loses the in-container graph and sessions on restart. No backups, restore exercise, high availability, load test, independent penetration test, SSO, or tenant isolation has been verified. This is a secured hackathon pilot, not an industry certification. See https://render.com/docs/free.
+
+The documentation-only publication commit uses Render's documented `[skip render]` marker to retain the already verified application deployment: https://render.com/docs/deploys#skipping-an-auto-deploy.
