@@ -29,6 +29,7 @@ async function worker(payload: Record<string, unknown>) {
           NODE_ENV: process.env.NODE_ENV, PATH: process.env.PATH, PYTHONUNBUFFERED: "1", FALKORDB_URL: process.env.FALKORDB_URL,
           GEMINI_API_KEY: process.env.GEMINI_API_KEY, GEMINI_MODEL: process.env.GEMINI_MODEL,
           GEMINI_EMBEDDING_MODEL: process.env.GEMINI_EMBEDDING_MODEL,
+          OPENBLAS_NUM_THREADS: "1", OMP_NUM_THREADS: "1",
         } },
         (error, stdout, stderr) => {
           if (error) {
