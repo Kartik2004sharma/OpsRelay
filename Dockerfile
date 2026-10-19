@@ -7,6 +7,7 @@ COPY . .
 RUN npm run build && npm prune --omit=dev
 
 FROM python:3.13-slim-trixie AS sdk
+ENV HNSWLIB_NO_NATIVE=1
 RUN apt-get update && apt-get install -y --no-install-recommends g++ && rm -rf /var/lib/apt/lists/*
 RUN python -m venv /opt/graphrag
 COPY graphrag/requirements-cloud.lock /tmp/requirements-cloud.lock
