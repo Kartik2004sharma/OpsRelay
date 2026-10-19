@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "seed": "node scripts/seed.mjs",
     "configure": "node scripts/configure-local.mjs",
-    "test": "node --experimental-strip-types --test tests/allocation.test.mjs",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "test:cloud": "node scripts/cloud-smoke.mjs",
     "test:e2e": "npm run build && playwright test"
   },
   "dependencies": {

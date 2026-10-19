@@ -6,7 +6,7 @@ export function json(body: unknown, status = 200) {
   return Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
 }
 
-export async function readJson(request: Request): Promise<Record<string, unknown>> {
+export async function readJson(request: Request, maxBytes = 4096): Promise<Record<string, unknown>> {
   const origin = request.headers.get("origin");
   let originHost: string | null = null;
   try { originHost = origin ? new URL(origin).host : null; } catch { throw new ApiError(403, "Invalid request origin."); }
@@ -22,7 +22,7 @@ export async function readJson(request: Request): Promise<Record<string, unknown
     const { done, value } = await reader.read();
     if (done) break;
     size += value.byteLength;
-    if (size > 4096) { await reader.cancel(); throw new ApiError(413, "The request is too large."); }
+    if (size > maxBytes) { await reader.cancel(); throw new ApiError(413, "The request is too large."); }
     chunks.push(value);
   }
   try {

@@ -49,3 +49,5 @@ next-env.d.ts
 
 # Generated visual review evidence
 .impeccable/review/
+/brag-output-*/
+/.private-backups/

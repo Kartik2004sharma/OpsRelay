@@ -2,10 +2,11 @@
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import type { getState } from "@/lib/ops";
+import BrainWorkspace from "./BrainWorkspace";
 
 type State = Awaited<ReturnType<typeof getState>> & { actor: string; demo: boolean };
 type Answer = { answer: string; mode: string; sources: string[] };
-const navItems = [["overview", "Overview"], ["impact", "Commitments"], ["evidence", "Evidence & sources"], ["actions", "Review queue"], ["history", "Activity"]];
+const navItems = [["overview", "Overview"], ["impact", "Commitments"], ["evidence", "Evidence & sources"], ["actions", "Review queue"], ["history", "Activity"], ["brain", "Company knowledge"]];
 
 function Icon({ name = "grid", size = 18 }: { name?: string; size?: number }) {
   const paths: Record<string, string> = {
@@ -135,6 +136,7 @@ export default function Home() {
             <section className="panel actions" id="actions"><div className="panel-head"><h2>Review queue</h2><span className="badge neutral">{pending} open</span></div>{!state.actions.length ? <div className="empty"><Icon name="check" size={24}/><strong>No actions need review</strong><p>A delay that threatens a commitment creates a response task here. You approve the decision; no customer message is sent.</p></div> : <><p className="reviewer">Reviewing as {state.actor}</p><div className="action-list">{state.actions.map((action) => <div key={action.id}><span className={`action-state ${action.status}`}><Icon name={action.status === "proposed" ? "clock" : "check"} size={14}/>{action.status === "proposed" ? "Needs review" : action.status}</span><strong>{action.title}</strong><small>{action.status === "proposed" ? "Draft response · human approval required" : action.status === "superseded" ? "Closed after supply update" : `${action.status} by ${action.reviewer}`}</small>{action.status === "proposed" && <div className="action-buttons"><button className="primary" disabled={Boolean(busy)} type="button" onClick={() => mutate({ kind: "review", id: action.id, decision: "approved" }, "review")}>Approve</button><button className="secondary" disabled={Boolean(busy)} type="button" onClick={() => mutate({ kind: "review", id: action.id, decision: "rejected" }, "review")}>Reject</button></div>}</div>)}</div></>}</section>
           </div></div>
           <section className="panel timeline" id="history"><div className="panel-head"><h2>Supply activity</h2><span className="muted">History stays in the graph</span></div><div className="timeline-items">{state.events.length ? state.events.map((event) => <button type="button" key={event.id} onClick={() => setSelectedSource(event.sourceId)}><span className="timeline-icon"><Icon name="clock" size={16}/></span><span><strong>{event.kind === "delay" ? "Delay reported" : "Recovery confirmed"}</strong><small>Arrival {date(event.arrivalDate)} · {event.note}</small><small data-testid="event-time">{event.recordedBy || "Operations lead"} · {new Date(event.recordedAt).toLocaleString("en-GB", { timeZone: "UTC" })} UTC</small></span><Icon name="arrow" size={15}/></button>) : <div className="timeline-baseline"><Icon name="clock"/><span><strong>Original supply plan</strong><small>{state.supplyQuantity} motors expected {date(state.plannedDate)}. Record a supply update to start the decision trail.</small></span></div>}</div></section>
+          <BrainWorkspace state={state} refresh={loadWorkspace} showSource={setSelectedSource}/>
         </>}
         <footer><span className="footer-brand">opsrelay.</span><span>Synthetic data · No external messages sent</span><span>Powered by FalkorDB</span></footer>
       </div>
