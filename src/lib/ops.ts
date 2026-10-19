@@ -102,7 +102,7 @@ export async function getState() {
   };
 }
 
-async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unknown, rawNote: unknown, actor: string) {
+export async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unknown, rawNote: unknown, actor: string, documentId = "") {
   if (!validDate(arrivalDate)) throw new Error("Enter a valid arrival date in YYYY-MM-DD format.");
   const note = typeof rawNote === "string" ? rawNote.trim().replace(/\s+/g, " ") : "";
   if (note.length < 8 || note.length > 280) throw new Error("Source note must be 8–280 characters.");
@@ -119,8 +119,12 @@ async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unkno
     MATCH (supply:Supply {id:$supplyId})
     WHERE coalesce(supply.revision,0) = $revision
     MATCH (previous:SourceRecord {id:$previousSourceId})
+    OPTIONAL MATCH (document:Document {id:$documentId})
+    OPTIONAL MATCH (document)-[:HAS_SOURCE]->(original:SourceRecord)
+    WITH supply, previous, document, original
+    WHERE $documentId = '' OR (document.status = 'pending' AND document.revision = $revision)
     OPTIONAL MATCH (pending:Action {status:'proposed'})
-    WITH supply, previous, collect(pending) AS pendingActions
+    WITH supply, previous, document, original, collect(pending) AS pendingActions
     CREATE (source:SourceRecord {id:$sourceId, title:$title, kind:$kind, body:$note, recordedAt:$recordedAt, status:'current'})
     CREATE (event:SupplyEvent {id:$id, kind:$kind, arrivalDate:$arrivalDate, note:$note, recordedAt:$recordedAt, sourceId:$sourceId, recordedBy:$actor})
     CREATE (event)-[:UPDATES]->(supply)
@@ -128,13 +132,17 @@ async function recordSupplyUpdate(kind: "delay" | "recovery", arrivalDate: unkno
     CREATE (previous)-[:SUPERSEDED_BY]->(source)
     SET supply.currentDate = $arrivalDate, supply.currentSourceId = $sourceId, supply.revision = $revision + 1
     SET previous.status = 'superseded'
+    FOREACH (doc IN CASE WHEN document IS NULL THEN [] ELSE [document] END |
+      SET doc.status = 'applied', doc.reviewedBy = $actor, doc.reviewedAt = $recordedAt
+      CREATE (source)-[:EXTRACTED_FROM]->(doc))
+    FOREACH (record IN CASE WHEN original IS NULL THEN [] ELSE [original] END | SET record.status = 'reviewed')
     FOREACH (draft IN $drafts |
       CREATE (action:Action {id:draft.id, orderId:draft.orderId, title:draft.title, status:'proposed', createdAt:$recordedAt, sourceId:$sourceId})
       CREATE (action)-[:RESPONDS_TO]->(event))
     FOREACH (action IN CASE WHEN $closePending THEN pendingActions ELSE [] END |
       SET action.status = 'superseded', action.reviewedAt = $recordedAt)
     RETURN event.id AS id
-  `, { supplyId: before.supplyId, revision: before.revision, previousSourceId: before.currentSourceId, sourceId, title: kind === "delay" ? "Supplier delay notice" : "Recovery confirmation", kind, note, recordedAt, id, arrivalDate, actor, drafts, closePending: true });
+  `, { supplyId: before.supplyId, revision: before.revision, previousSourceId: before.currentSourceId, sourceId, title: kind === "delay" ? "Supplier delay notice" : "Recovery confirmation", kind, note, recordedAt, id, arrivalDate, actor, drafts, closePending: true, documentId });
   if (!updated.length) throw new ApiError(409, "The company graph changed. Refresh and try again.");
   return getState();
 }

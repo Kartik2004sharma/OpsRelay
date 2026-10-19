@@ -8,12 +8,14 @@ Trace supplier disruptions through your company graph, inspect the evidence, and
 
 [![Verify](https://github.com/Kartik2004sharma/OpsRelay/actions/workflows/verify.yml/badge.svg)](https://github.com/Kartik2004sharma/OpsRelay/actions/workflows/verify.yml)
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-202632?logo=nextdotjs)
-![FalkorDB](https://img.shields.io/badge/Graph-FalkorDB-315bd6)
-![TypeScript](https://img.shields.io/badge/TypeScript-315bd6?logo=typescript&logoColor=white)
+![FalkorDB](https://img.shields.io/badge/Graph-FalkorDB-086557)
+![TypeScript](https://img.shields.io/badge/TypeScript-086557?logo=typescript&logoColor=white)
 
 [**Explore live demo →**](https://opsrelay.onrender.com) · [Watch the walkthrough](#see-it-in-action) · [Run locally](#quick-start) · [Graph queries](docs/graph-queries.md)
 
 Built for **Graph Hacks 2026 · Company Brain**
+
+**Post-hackathon extension (development branch):** cloud investigations, GraphRAG SDK evidence search, reviewed notices, persistent lessons, and downloadable response drafts. The public demo may still run the submitted release. See [extension scope and verification](docs/POST_HACKATHON.md).
 
 </div>
 
@@ -25,7 +27,7 @@ A delayed shipment rarely affects just one team. The same component can appear i
 
 Record a supplier date change to recalculate coverage, trace affected commitments to their sources, and create proposals for human review. Record recovery to update the plan while preserving earlier evidence and decisions.
 
-> **Try it without a password:** open the [live demo](https://opsrelay.onrender.com) and select **Explore live demo**. Each visitor gets an isolated synthetic workspace. Sessions last up to one hour; the free host may sleep or reset data earlier.
+> **Try it without a password:** the public landing page introduces the product and launches an isolated workspace with **Explore live demo**. The dashboard and operator sign-in are at `/workspace`. Each visitor gets an isolated synthetic workspace. Sessions last up to one hour; the free host may sleep or reset data earlier.
 
 ## See it in action
 
@@ -56,6 +58,11 @@ The recording uses the working website and synthetic company data. Music attribu
 | **Keep knowledge current** | Distinguish the current supplier update from superseded plans without deleting earlier evidence. |
 | **Review the response** | Approve or reject a proposal and retain the reviewer and decision. |
 | **Record recovery** | Restore coverage, supersede outdated open proposals, and preserve completed reviews. |
+| **Investigate with a cloud agent** | Gemini follows bounded graph tools and saves cited analysis and its tool trace. |
+| **Review supplier documents** | Import text notices, inspect original evidence, and apply a reviewed date with stale-state protection. |
+| **Search reviewed evidence** | Index applied notices with GraphRAG SDK and Gemini, retrieve exact original passages, and inspect connected entities. |
+| **Remember lessons** | Retain human knowledge linked to sources across workspace sessions. |
+| **Prepare customer responses** | Approve and download source-linked drafts without sending messages. |
 | **Explore safely** | Use a separate temporary graph for each public demo, alongside a protected operator workspace. |
 
 ### A concrete disruption
@@ -119,9 +126,11 @@ Start a local graph database. The loopback bindings keep its ports on your machi
 ```bash
 docker run -d --name opsrelay-falkordb \
   -p 127.0.0.1:6379:6379 -p 127.0.0.1:3001:3000 \
-  -v opsrelay-falkordb-data:/data \
+  -v opsrelay-falkordb-data:/var/lib/falkordb/data \
   falkordb/falkordb@sha256:b0bdcac2cbaff989e77cb0610439b7a9289e86de033ccbbd4368b66fb680ae7a
 ```
+
+For an AOF-backed database on port 6380, use the [persistent local setup](docs/POST_HACKATHON.md#persistent-local-database).
 
 Create private configuration, seed the synthetic company, and start the app:
 
@@ -131,9 +140,13 @@ npm run seed
 npm run dev
 ```
 
-Open **[localhost:3000](http://localhost:3000)** and select **Explore live demo**, or choose **Operator sign in** using the generated password in `.env.local`. The graph browser is at [localhost:3001](http://localhost:3001).
+Open **[localhost:3000](http://localhost:3000)** for the product website and select **Explore live demo**. For protected access, open **[localhost:3000/workspace](http://localhost:3000/workspace)** and choose **Operator sign in** using the generated password in `.env.local`. The graph browser is at [localhost:3001](http://localhost:3001).
 
 `npm run configure` creates `.env.local` with a random operator password and preserves any existing file. Keep it private. Seeding preserves an existing nonempty graph.
+
+### Cloud document search
+
+The optional Python worker uses **GraphRAG SDK 1.4.0** with Gemini cloud extraction and embeddings. Review a notice, index its evidence, then search by meaning with original-source citations. See [cloud SDK setup and boundaries](docs/GRAPHRAG.md). FalkorDB Cloud connectivity is prepared but still awaits a secure endpoint; it is not yet verified.
 
 ### Configuration
 
@@ -145,6 +158,11 @@ Use [`.env.example`](.env.example) as the reference. Both the application and th
 | `FALKORDB_GRAPH` | Operator graph name; defaults to `opsrelay`. |
 | `OPSRELAY_OPERATOR_NAME` | Display name of the protected operator identity. |
 | `OPSRELAY_OPERATOR_PASSWORD` | Private operator password, at least 20 characters. |
+| `GEMINI_API_KEY` | Optional server-only cloud agent key. Keep provider billing disabled for free-only operation. |
+| `GEMINI_MODEL` | Verified default `gemini-3.5-flash-lite`; no automatic model fallback. |
+| `GRAPHRAG_ENABLED` | Set `1` to enable the installed cloud SDK worker. |
+| `GRAPHRAG_PYTHON` | Absolute Python interpreter path for the isolated SDK environment. |
+| `GEMINI_EMBEDDING_MODEL` | Cloud embeddings; default `gemini-embedding-001` with 768 dimensions. |
 
 For FalkorDB Cloud, replace `FALKORDB_URL` with the private connection URL supplied by the service before seeding. Production connections to a remote database require TLS through `falkors://` or `rediss://`.
 
@@ -173,6 +191,7 @@ FalkorDB · relationships, sources, updates, review decisions
 
 - `GET /api/ops` loads the workspace assigned to the current session.
 - `POST /api/ops` records supplier changes and reviews, or returns deterministic graph analysis.
+- `GET/POST /api/brain` manages reviewed documents, lessons, bounded cloud investigations, and message drafts within the same session graph.
 - Server-side sessions select the graph and reviewer identity. Public demo sessions cannot choose the operator graph.
 - Supply updates use revision checks; completed reviews cannot be overwritten by a second review.
 
@@ -188,7 +207,7 @@ FalkorDB · relationships, sources, updates, review decisions
 ## Development and verification
 
 ```bash
-npm test                    # Allocation rules
+npm test                    # Allocation, notice validation, agent loop limits
 npm run lint                # ESLint
 npm run build               # Production build and framework type checking
 npm run typecheck           # Standalone TypeScript check
@@ -206,7 +225,7 @@ The [live demo](https://opsrelay.onrender.com) runs the app and real FalkorDB to
 
 - **Ephemeral hosting:** sleep, restart, or redeploy can reset demo changes and sessions. Use persistent FalkorDB hosting for lasting data.
 - **Synthetic scenario:** all company records, people, orders, and documents are fictional.
-- **Deterministic analysis:** supported questions are answered from graph queries and planning rules; this version has no LLM integration.
+- **Two analysis modes:** the original quick answers remain deterministic. The Company knowledge workspace adds Gemini investigations when a server key is configured; outputs require human review and free quota may be exhausted.
 - **Human review:** approval records a decision inside OpsRelay. It does not send customer messages or update an ERP.
 - **Focused planner:** allocation models one shared component; it is not a full manufacturing optimizer.
 - **Access model:** one protected operator identity and isolated public demos; organizational SSO and enterprise role management are outside the current scope.
@@ -215,6 +234,7 @@ Read the [security boundaries](docs/SECURITY.md) before adapting the project for
 
 ## Documentation
 
+- [Post-hackathon extension, cloud setup, and durable local storage](docs/POST_HACKATHON.md)
 - [Graph queries and return contracts](docs/graph-queries.md)
 - [Security and hosting boundaries](docs/SECURITY.md)
 - [Observed verification results](docs/verification.md)

@@ -7,3 +7,10 @@ tests
 demo/*.webm
 demo/frame-*.png
 .env*
+.private-backups
+.impeccable
+brag-output-*
+
+.venv/
+__pycache__/
+*.pyc

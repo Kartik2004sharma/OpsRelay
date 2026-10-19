@@ -16,7 +16,7 @@ test.afterEach(async () => {
 });
 
 test("demo opens without a password and two visitors have isolated graph workflows", async ({ page, browser, request }, testInfo) => {
-  await page.goto("/");
+  await page.goto("/workspace");
   await page.getByRole("button", { name: "Explore live demo", exact: true }).click();
   await expect(page.getByText("Your private demo")).toBeVisible();
   await expect(page.getByText("All commitments covered")).toBeVisible();
@@ -52,7 +52,7 @@ test("demo opens without a password and two visitors have isolated graph workflo
 });
 
 test("entry errors, retry, navigation, keyboard source dialog, and expired session recover", async ({ page }, testInfo) => {
-  await page.goto("/");
+  await page.goto("/workspace");
   await expect(page.getByRole("button", { name: "Explore live demo", exact: true })).toBeVisible();
   await page.screenshot({ path: `.impeccable/review/${testInfo.project.name}-entry.png`, fullPage: true });
   await page.getByRole("button", { name: "Operator sign in", exact: true }).click();

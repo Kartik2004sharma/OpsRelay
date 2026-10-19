@@ -4,7 +4,10 @@ import { loadEnvFile } from "node:process";
 
 try { loadEnvFile(".env.local"); } catch (error) { if (error.code !== "ENOENT") throw error; }
 
-const db = await FalkorDB.connect({ url: process.env.FALKORDB_URL || "falkor://127.0.0.1:6379", socket: { connectTimeout: 5000, reconnectStrategy: false } });
+const url = process.env.FALKORDB_URL || "falkor://127.0.0.1:6379";
+const address = new URL(url);
+if (!["localhost", "127.0.0.1", "[::1]"].includes(address.hostname) && !["falkors:", "rediss:"].includes(address.protocol)) throw new Error("Remote FalkorDB requires verified TLS.");
+const db = await FalkorDB.connect({ url, socket: { connectTimeout: 5000, reconnectStrategy: false } });
 const graphName = process.env.FALKORDB_GRAPH || "opsrelay";
 const graph = db.selectGraph(graphName);
 const exists = (await db.list()).includes(graphName);
