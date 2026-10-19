@@ -30,8 +30,10 @@ async function worker(payload: Record<string, unknown>) {
           GEMINI_API_KEY: process.env.GEMINI_API_KEY, GEMINI_MODEL: process.env.GEMINI_MODEL,
           GEMINI_EMBEDDING_MODEL: process.env.GEMINI_EMBEDDING_MODEL,
         } },
-        (error, stdout) => {
+        (error, stdout, stderr) => {
           if (error) {
+            // Log only failure codes/classes; vendor messages may contain private evidence.
+            console.error("GraphRAG worker failure", { code: error.code, signal: error.signal, type: stdout.match(/"errorType":\s*"([A-Za-z]+)"/)?.[1] || stderr.match(/(?:^|\n)([A-Za-z]+Error):/)?.[1] || "unknown", status: stdout.match(/"status":\s*(\d{3})/)?.[1] });
             reject(new ApiError(stdout.includes('"SDK_QUOTA"') ? 429 : 503,
               stdout.includes('"SDK_QUOTA"') ? "The model’s free quota is exhausted. No paid fallback is enabled." : "Document indexing or search could not finish. Check the SDK worker and cloud provider, then retry."));
           } else resolve(stdout);

@@ -196,5 +196,5 @@ if __name__ == "__main__":
                 status = cause.status
                 break
             cause = cause.__cause__
-        print(json.dumps({"error": "SDK_QUOTA" if status == 429 else "SDK_UNAVAILABLE"}))
+        print(json.dumps({"error": "SDK_QUOTA" if status == 429 else "SDK_UNAVAILABLE", "errorType": type(exc).__name__, "status": status}))
         sys.exit(1)

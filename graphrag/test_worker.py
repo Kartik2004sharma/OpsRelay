@@ -46,6 +46,15 @@ class WorkerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'graph scope'):
             asyncio.run(worker.run({'graphName': '../../other-workspace'}))
 
+    def test_failure_diagnostics_exclude_exception_messages(self):
+        import json
+        import subprocess
+        result = subprocess.run([sys.executable, str(Path(__file__).with_name('worker.py'))],
+                                input='{"graphName":"private-invalid-value"}', text=True, capture_output=True)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(json.loads(result.stdout), {'error': 'SDK_UNAVAILABLE', 'errorType': 'ValueError', 'status': 503})
+        self.assertNotIn('private-invalid-value', result.stdout + result.stderr)
+
 
 if __name__ == '__main__':
     unittest.main()
