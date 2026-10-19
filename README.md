@@ -27,7 +27,7 @@ A delayed shipment rarely affects just one team. The same component can appear i
 
 Record a supplier date change to recalculate coverage, trace affected commitments to their sources, and create proposals for human review. Record recovery to update the plan while preserving earlier evidence and decisions.
 
-> **Try it without a password:** open the [live demo](https://opsrelay.onrender.com) and select **Explore live demo**. Each visitor gets an isolated synthetic workspace. Sessions last up to one hour; the free host may sleep or reset data earlier.
+> **Try it without a password:** the public landing page introduces the product and launches an isolated workspace with **Explore live demo**. The dashboard and operator sign-in are at `/workspace`. Each visitor gets an isolated synthetic workspace. Sessions last up to one hour; the free host may sleep or reset data earlier.
 
 ## See it in action
 
@@ -139,7 +139,7 @@ npm run seed
 npm run dev
 ```
 
-Open **[localhost:3000](http://localhost:3000)** and select **Explore live demo**, or choose **Operator sign in** using the generated password in `.env.local`. The graph browser is at [localhost:3001](http://localhost:3001).
+Open **[localhost:3000](http://localhost:3000)** for the product website and select **Explore live demo**. For protected access, open **[localhost:3000/workspace](http://localhost:3000/workspace)** and choose **Operator sign in** using the generated password in `.env.local`. The graph browser is at [localhost:3001](http://localhost:3001).
 
 `npm run configure` creates `.env.local` with a random operator password and preserves any existing file. Keep it private. Seeding preserves an existing nonempty graph.
 

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("notice review, persistent lessons and approved downloads work in isolated demo graphs", async ({ page, browser }) => {
-  await page.goto("/");
+  await page.goto("/workspace");
   await page.getByRole("button", { name: "Explore live demo", exact: true }).click();
   await page.getByRole("link", { name: "Company knowledge", exact: true }).click();
   const brain = page.locator("#brain");

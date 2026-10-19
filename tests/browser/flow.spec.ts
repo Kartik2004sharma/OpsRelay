@@ -13,7 +13,7 @@ test("supplier delay to reviewed action and recovery stays graph-backed", async 
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => { if (message.type() === "error" && !message.text().includes("401 (Unauthorized)")) errors.push(message.text()); });
 
-  await page.goto("/");
+  await page.goto("/workspace");
   await page.getByRole("button", { name: "Operator sign in", exact: true }).click();
   await page.getByLabel("Operator password").fill("test-only-opsrelay-password-2026");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
