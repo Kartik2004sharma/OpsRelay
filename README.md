@@ -15,7 +15,7 @@ Trace supplier disruptions through your company graph, inspect the evidence, and
 
 Built for **Graph Hacks 2026 · Company Brain**
 
-**Post-hackathon extension (development branch):** cloud investigations, GraphRAG SDK evidence search, reviewed notices, persistent lessons, and downloadable response drafts. The public demo may still run the submitted release. See [extension scope and verification](docs/POST_HACKATHON.md).
+**Live post-hackathon extension:** Gemini investigations, GraphRAG SDK evidence search, reviewed notices, saved lessons, and downloadable response drafts are deployed. The original submission is preserved separately. See [public release verification](docs/RELEASE-2026-10-19.md) and [extension scope](docs/POST_HACKATHON.md).
 
 </div>
 

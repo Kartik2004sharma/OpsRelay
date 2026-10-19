@@ -32,8 +32,8 @@ Documents, lessons, investigations, citations, tool traces, drafts and reviews a
 | Company Brain | Supplier → component → product → commitment → customer → owner, plus documents and decisions. |
 | Persistent memory | Source-linked human lessons and investigation history in the same isolated graph. |
 | Agent coordination | Shared graph context and human handoff through reviewed drafts; no claim of a multi-agent runtime. |
-| FalkorDB Cloud | Existing TLS connection support. This extension uses a free local persistent database; public Render remains ephemeral. |
-| GraphRAG SDK | Integrated on this branch on 19 October: reviewed-notice ingestion, cloud extraction/embeddings and source-verified retrieval in an isolated companion graph. [Setup and evidence](GRAPHRAG.md). |
+| FalkorDB Cloud | Free instance is healthy but has no TLS option. Remote plaintext is blocked. The live free Render app uses loopback-only FalkorDB and remains ephemeral. |
+| GraphRAG SDK | Deployed and verified on 19 October: reviewed-notice ingestion, cloud extraction/embeddings and source-verified retrieval in an isolated companion graph. [Release evidence](RELEASE-2026-10-19.md). |
 | Discord / guides | Learning and support resources, not dependencies or required product features. |
 
 ## Verification and repair loop
@@ -77,4 +77,4 @@ No enterprise SSO/RBAC, real ERP/email connector, arbitrary PDF/OCR ingestion, p
 
 ## 19 October: cloud SDK and palette extension
 
-The development branch now uses GraphRAG SDK 1.4.0 with cloud Gemini extraction/embeddings for applied-notice indexing and evidence search. Actual ingestion and retrieval passed against local FalkorDB, including exact provenance and unchanged allocation. [Setup, limitations and Cloud status](GRAPHRAG.md). The website uses teal, mint and ivory, retaining amber risk labels. The free FalkorDB Cloud instance is healthy; secure app connectivity is blocked by its supplied plaintext connection; no public deployment is claimed for this extension.
+The public release now uses GraphRAG SDK 1.4.0 with cloud Gemini extraction/embeddings for applied-notice indexing and evidence search. Actual ingestion and retrieval passed against the hosted app, including exact provenance and unchanged allocation. [Public release evidence](RELEASE-2026-10-19.md). The website uses teal, mint and ivory, retaining amber risk labels. The free FalkorDB Cloud instance is healthy; secure app connectivity is blocked by its supplied plaintext connection. The app therefore uses the existing free Render container's loopback-only database.
