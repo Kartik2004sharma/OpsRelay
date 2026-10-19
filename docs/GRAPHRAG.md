@@ -52,3 +52,9 @@ node scripts/graphrag-smoke.mjs
 The second command consumes Gemini free quota and creates a disposable demo workspace. It verifies actual SDK indexing, semantic retrieval, exact source provenance and unchanged operational allocation. It does not verify FalkorDB Cloud or a public deployment.
 
 Sources: [SDK providers](https://falkordb.github.io/GraphRAG-SDK/providers/), [SDK setup](https://falkordb.github.io/GraphRAG-SDK/getting-started/), [Gemini embeddings](https://ai.google.dev/gemini-api/docs/embeddings), [FalkorDB plans](https://www.falkordb.com/plans/).
+
+## Render secret-file delivery
+
+The release entrypoint optionally loads `/etc/secrets/render-agent.env` with Node’s environment-file parser. Upload that private file in the existing service’s Secret Files settings with only `GEMINI_API_KEY`, the two model names, `GRAPHRAG_ENABLED=1`, and `GRAPHRAG_PYTHON=/opt/graphrag/bin/python`. Existing service environment values take precedence. The file is not part of the repository or image. Preserve the operator credentials already configured on Render.
+
+Free Cloud connectivity was rechecked in the instance Modify dialog: this subscription exposes no TLS setting. The approved free release therefore keeps FalkorDB loopback-only in the Render container, while the separate Cloud instance remains unused.

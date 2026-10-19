@@ -11,4 +11,4 @@ case "${FALKORDB_URL:-redis://127.0.0.1:6379}" in
   *) echo "Use a verified TLS URL for remote FalkorDB." >&2; exit 1 ;;
 esac
 node scripts/seed.mjs
-exec node node_modules/next/dist/bin/next start -H 0.0.0.0 -p "${PORT:-10000}"
+exec node --env-file-if-exists=/etc/secrets/render-agent.env node_modules/next/dist/bin/next start -H 0.0.0.0 -p "${PORT:-10000}"
