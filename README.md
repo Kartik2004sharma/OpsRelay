@@ -8,14 +8,14 @@ Trace supplier disruptions through your company graph, inspect the evidence, and
 
 [![Verify](https://github.com/Kartik2004sharma/OpsRelay/actions/workflows/verify.yml/badge.svg)](https://github.com/Kartik2004sharma/OpsRelay/actions/workflows/verify.yml)
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-202632?logo=nextdotjs)
-![FalkorDB](https://img.shields.io/badge/Graph-FalkorDB-315bd6)
-![TypeScript](https://img.shields.io/badge/TypeScript-315bd6?logo=typescript&logoColor=white)
+![FalkorDB](https://img.shields.io/badge/Graph-FalkorDB-086557)
+![TypeScript](https://img.shields.io/badge/TypeScript-086557?logo=typescript&logoColor=white)
 
 [**Explore live demo →**](https://opsrelay.onrender.com) · [Watch the walkthrough](#see-it-in-action) · [Run locally](#quick-start) · [Graph queries](docs/graph-queries.md)
 
 Built for **Graph Hacks 2026 · Company Brain**
 
-**Post-hackathon extension:** cloud investigations, reviewed notices, persistent lessons, and downloadable response drafts. See [extension scope and verification](docs/POST_HACKATHON.md).
+**Post-hackathon extension (development branch):** cloud investigations, GraphRAG SDK evidence search, reviewed notices, persistent lessons, and downloadable response drafts. The public demo may still run the submitted release. See [extension scope and verification](docs/POST_HACKATHON.md).
 
 </div>
 
@@ -60,6 +60,7 @@ The recording uses the working website and synthetic company data. Music attribu
 | **Record recovery** | Restore coverage, supersede outdated open proposals, and preserve completed reviews. |
 | **Investigate with a cloud agent** | Gemini follows bounded graph tools and saves cited analysis and its tool trace. |
 | **Review supplier documents** | Import text notices, inspect original evidence, and apply a reviewed date with stale-state protection. |
+| **Search reviewed evidence** | Index applied notices with GraphRAG SDK and Gemini, retrieve exact original passages, and inspect connected entities. |
 | **Remember lessons** | Retain human knowledge linked to sources across workspace sessions. |
 | **Prepare customer responses** | Approve and download source-linked drafts without sending messages. |
 | **Explore safely** | Use a separate temporary graph for each public demo, alongside a protected operator workspace. |
@@ -143,6 +144,10 @@ Open **[localhost:3000](http://localhost:3000)** for the product website and sel
 
 `npm run configure` creates `.env.local` with a random operator password and preserves any existing file. Keep it private. Seeding preserves an existing nonempty graph.
 
+### Cloud document search
+
+The optional Python worker uses **GraphRAG SDK 1.4.0** with Gemini cloud extraction and embeddings. Review a notice, index its evidence, then search by meaning with original-source citations. See [cloud SDK setup and boundaries](docs/GRAPHRAG.md). FalkorDB Cloud connectivity is prepared but still awaits a secure endpoint; it is not yet verified.
+
 ### Configuration
 
 Use [`.env.example`](.env.example) as the reference. Both the application and the seed command load `.env.local`.
@@ -155,6 +160,9 @@ Use [`.env.example`](.env.example) as the reference. Both the application and th
 | `OPSRELAY_OPERATOR_PASSWORD` | Private operator password, at least 20 characters. |
 | `GEMINI_API_KEY` | Optional server-only cloud agent key. Keep provider billing disabled for free-only operation. |
 | `GEMINI_MODEL` | Verified default `gemini-3.5-flash-lite`; no automatic model fallback. |
+| `GRAPHRAG_ENABLED` | Set `1` to enable the installed cloud SDK worker. |
+| `GRAPHRAG_PYTHON` | Absolute Python interpreter path for the isolated SDK environment. |
+| `GEMINI_EMBEDDING_MODEL` | Cloud embeddings; default `gemini-embedding-001` with 768 dimensions. |
 
 For FalkorDB Cloud, replace `FALKORDB_URL` with the private connection URL supplied by the service before seeding. Production connections to a remote database require TLS through `falkors://` or `rediss://`.
 

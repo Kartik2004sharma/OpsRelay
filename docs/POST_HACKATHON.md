@@ -33,7 +33,7 @@ Documents, lessons, investigations, citations, tool traces, drafts and reviews a
 | Persistent memory | Source-linked human lessons and investigation history in the same isolated graph. |
 | Agent coordination | Shared graph context and human handoff through reviewed drafts; no claim of a multi-agent runtime. |
 | FalkorDB Cloud | Existing TLS connection support. This extension uses a free local persistent database; public Render remains ephemeral. |
-| GraphRAG SDK | Reviewed as an optional document extraction/retrieval framework. Not installed or claimed as integrated: the current fixed operational schema uses a bounded read-tool agent and reviewed date extraction. An arbitrary-document pipeline needs a separate extraction/embedding evaluation before becoming authoritative. |
+| GraphRAG SDK | Integrated on this branch on 19 October: reviewed-notice ingestion, cloud extraction/embeddings and source-verified retrieval in an isolated companion graph. [Setup and evidence](GRAPHRAG.md). |
 | Discord / guides | Learning and support resources, not dependencies or required product features. |
 
 ## Verification and repair loop
@@ -73,4 +73,8 @@ Reference: [FalkorDB persistence guide](https://docs.falkordb.com/operations/dur
 
 ## Remaining boundaries
 
-No enterprise SSO/RBAC, real ERP/email connector, arbitrary PDF/OCR ingestion, GraphRAG SDK pipeline, production load test, high availability or external security assessment. Public free Render data still resets on redeploy/restart. The original 60-second video shows the submitted deterministic workflow, not this extension.
+No enterprise SSO/RBAC, real ERP/email connector, arbitrary PDF/OCR ingestion, production load test, high availability or external security assessment. Public free Render data still resets on redeploy/restart. The original 60-second video shows the submitted deterministic workflow, not this extension.
+
+## 19 October: cloud SDK and palette extension
+
+The development branch now uses GraphRAG SDK 1.4.0 with cloud Gemini extraction/embeddings for applied-notice indexing and evidence search. Actual ingestion and retrieval passed against local FalkorDB, including exact provenance and unchanged allocation. [Setup, limitations and Cloud status](GRAPHRAG.md). The website uses teal, mint and ivory, retaining amber risk labels. The free FalkorDB Cloud instance is healthy; secure app connectivity is blocked by its supplied plaintext connection; no public deployment is claimed for this extension.

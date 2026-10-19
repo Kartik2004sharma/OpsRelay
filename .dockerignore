@@ -10,3 +10,7 @@ demo/frame-*.png
 .private-backups
 .impeccable
 brag-output-*
+
+.venv/
+__pycache__/
+*.pyc

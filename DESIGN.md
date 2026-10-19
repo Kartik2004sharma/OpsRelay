@@ -3,22 +3,23 @@
   "name": "OpsRelay",
   "description": "A precise control tower for supplier disruption decisions",
   "colors": {
-    "primary": "#315bd6",
-    "primary-soft": "#eef2ff",
-    "background": "#f6f7f9",
+    "primary": "#086557",
+    "primary-soft": "#e3f1e8",
+    "background": "#f5f6ef",
     "surface": "#ffffff",
-    "ink": "#202632",
-    "muted": "#606a7a",
-    "line": "#e4e7ed",
+    "ink": "#193c34",
+    "muted": "#596c64",
+    "line": "#dce5dc",
     "success": "#287553",
     "success-bg": "#edf7f0",
     "warning": "#96540a",
     "warning-bg": "#fff5e6",
-    "public-paper": "#fbfcfa",
-    "public-ink": "#192a3c",
-    "public-quiet": "#586574",
-    "public-rule": "#dce2e5",
-    "public-blue-section": "#233e88"
+    "public-paper": "#fcfbf6",
+    "public-ink": "#173d37",
+    "public-quiet": "#526963",
+    "public-rule": "#d9e3db",
+    "public-brain-section": "#123f37",
+    "public-context": "#e0eee4"
   },
   "typography": {
     "headline": {
@@ -120,7 +121,7 @@
       "rounded": "{rounded.public-preview}"
     },
     "public-brain-section": {
-      "backgroundColor": "{colors.public-blue-section}",
+      "backgroundColor": "{colors.public-brain-section}",
       "textColor": "{colors.surface}",
       "padding": "90px 52px"
     }
@@ -134,9 +135,9 @@
 
 **Creative North Star: "Control tower"**
 
-A light control-tower workspace gives priority to connected commitments, current supply facts and the next review decision. Compact type, disciplined rules and a restrained blue action color keep the operational task legible.
+A light control-tower workspace gives priority to connected commitments, current supply facts and the next review decision. Compact type, disciplined rules and a restrained deep teal action color keep the operational task legible.
 
-The public landing and trust pages extend this world with generous display type, near-white paper, a responsive supply scenario and an expansive blue company-memory section. The operator workspace retains its compact hierarchy and existing tokens. Public examples disclose their synthetic or illustrative status beside the content.
+The public landing and trust pages extend this world with generous display type, warm ivory paper, a responsive supply scenario and an expansive dark teal company-memory section. The operator workspace retains its compact hierarchy with matching teal action and mint context roles. Public examples disclose their synthetic or illustrative status beside the content.
 
 **Key Characteristics:**
 - Compact, factual task hierarchy.
@@ -148,9 +149,9 @@ The user delegated the direction and code-first build. Direction seed `e7e7f013`
 
 ## Colors
 
-Primary blue is reserved for actions, selection and focus. Cool neutral surfaces hold the data. Green communicates covered commitments; amber communicates shortages. The normative values are in the frontmatter.
+Deep teal (#086557) is reserved for actions, selection and focus. Warm ivory (#fcfbf6) grounds the public pages; the workspace uses a muted warm neutral (#f5f6ef). Pale mint (#e0eee4) provides public contextual emphasis, while workspace selection uses primary-soft (#e3f1e8). Green communicates covered commitments; amber communicates shortages. The normative values are in the frontmatter.
 
-Public variants use public-paper, public-ink, public-quiet and public-rule from the frontmatter. Shared primary blue connects public actions to workspace actions; public-blue-section is the broad company-memory background. These variants are scoped to the public surface and do not redefine operator colors.
+Public variants use public-paper, public-ink, public-quiet and public-rule from the frontmatter. Shared primary teal connects public actions to workspace actions; public-brain-section (#123f37) is the broad company-memory background. Public variants remain scoped to landing and trust pages; the shared action role and workspace neutrals were explicitly refined together.
 
 **The State Text Rule.** Every semantic color is paired with readable text.
 
@@ -172,11 +173,11 @@ The trust page uses a 930px maximum container, ordered ruled sections and shared
 
 ## Elevation & Depth
 
-Hairline borders establish structure. Small offset shadows distinguish graph nodes and active controls; the source drawer receives a broad, soft lateral shadow. No decorative halos or hard block shadows. The public preview uses a diffuse shadow (`0 16px 50px -24px #17314d3d`); public graph nodes use a smaller shadow (`0 4px 10px -6px #24476632`). The company-memory section gains depth from the blue ground, pale content panel and white evidence record. Mobile navigation uses a restrained floating shadow.
+Hairline borders establish structure. Small offset shadows distinguish graph nodes and active controls; the source drawer receives a broad, soft lateral shadow. No decorative halos or hard block shadows. The public preview uses a diffuse shadow (`0 16px 50px -24px #153e313d`); public graph nodes use a smaller shadow (`0 4px 10px -6px #24476632`). The company-memory section gains depth from the dark teal ground, pale content panel and white evidence record. Mobile navigation uses a restrained floating shadow.
 
 ## Shapes
 
-Gently curved panels and controls use the frontmatter radius tokens. Status badges use a smaller corner. Avatar and status markers may be circular. Public buttons retain the control corner; the large supply preview and company-memory evidence use their named public radius variants. The public logo and favicon share a blue rounded-square mark with a white triangular relationship path and three circular nodes.
+Gently curved panels and controls use the frontmatter radius tokens. Status badges use a smaller corner. Avatar and status markers may be circular. Public buttons retain the control corner; the large supply preview and company-memory evidence use their named public radius variants. The public logo and favicon share a teal rounded-square mark with a white triangular relationship path and three circular nodes.
 
 ## Components
 
@@ -184,7 +185,7 @@ Primary and secondary buttons share spacing and focus behavior. Inputs keep nati
 
 ### Public navigation and actions
 
-The sticky public header links to the product scenario, workflow, company brain and FAQ anchors. Open workspace links to `/workspace`. Desktop anchor navigation hides at 900px; the phone native details menu appears at 600px and closes after a destination is selected. A keyboard skip link precedes the header. Public interactive elements use a 3px blue focus outline with 5px offset; the blue section uses a pale outline.
+The sticky public header links to the product scenario, workflow, company brain and FAQ anchors. Open workspace links to `/workspace`. Desktop anchor navigation hides at 900px; the phone native details menu appears at 600px and closes after a destination is selected. A keyboard skip link precedes the header. Public interactive elements use a 3px teal focus outline with 5px offset; the dark teal section uses a pale mint outline.
 
 The public demo action creates a demo session via `/api/session`, shows Opening your workspace… while disabled, then navigates to `/workspace`. A request failure appears as an alert beside the action and allows retry. Its 45-second timeout explains that the free service may be waking up. Secondary text links lead to walkthrough content, source code and trust information.
 
@@ -192,7 +193,13 @@ The public demo action creates a demo session via `/api/session`, shows Opening 
 
 Original plan, Supplier delay and Recovery are pressed-state buttons. The default is Supplier delay. They use the app’s shared pure allocation function against disclosed synthetic commitments; this is a local illustrative interaction, not a live database query. Selecting an order shows coverage, product and response owner. The impact strip announces changes with a status role. Original plan and Recovery share the restored arrival date; Recovery receives an explicit confirmation label.
 
-The blue company-memory section offers three pressed-state capability choices. The selected evidence, lesson or reviewed-response panel updates through a polite live region and is labelled Illustrative product preview · synthetic records. FAQ rows use native details/summary with plus/minus state. Public transitions last 180–200ms; reduced-motion disables animations, transitions and smooth scrolling.
+The dark teal company-memory section offers three pressed-state capability choices. The selected evidence, lesson or reviewed-response panel updates through a polite live region and is labelled Illustrative product preview · synthetic records. FAQ rows use native details/summary with plus/minus state. Public transitions last 180–200ms; reduced-motion disables animations, transitions and smooth scrolling.
+
+### Reviewed-document search
+
+The Company Brain workspace places a ruled evidence-search section before its task cards. A visible label names the query field; the document-count badge distinguishes configured and unconfigured search. Search uses a primary teal action, with a stacked full-width form below 700px. Empty indexing guidance and search results explain the next step in text. Result counts and no-result feedback use `role="status"`; failures retain the shared alert treatment.
+
+Verified passages appear on a quiet mint surface (#edf5ee) with a source title, an explicit Reviewed evidence or Historical evidence label, quoted original text, optional connected entities and a Read original source action. Only applied notices expose Index reviewed evidence; adjacent copy explains that indexing sends reviewed text to Gemini. Indexing and search do not establish operational supply facts or bypass review.
 
 ### Recorded walkthrough and provenance
 
@@ -212,3 +219,9 @@ The walkthrough uses a 16:9 native video with controls, inline playback, no prel
 - Do not add decorative eyebrows above headings.
 - Do not use color alone to communicate risk.
 - Do not hide core actions behind operator credentials when showing the synthetic demo.
+
+## Approved refinement — 19 October 2026
+
+The user requested improved colour combinations alongside Cloud and GraphRAG work. This refinement preserves the control-tower direction, responsive layout, type scale, synthetic-data disclosures and existing review mechanics. Deep teal actions, dark teal Company Brain, warm ivory public paper and pale mint context replace the earlier blue action/public section treatment. Amber remains reserved for risk, always paired with text. The earlier action blue (#315bd6), company-memory blue (#233e88) and near-white paper (#fbfcfa) are retained here as historical decisions, alongside the original seed record above; they are not the current palette. The recorded walkthrough retains its original interface colours as historical evidence.
+
+The independent finish review accepted the palette, layout and contrast; its result-count announcement request is reflected in the search status treatment above.

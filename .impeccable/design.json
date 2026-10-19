@@ -1,52 +1,52 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-19T08:00:58.846215+00:00",
+  "generatedAt": "2026-10-19T12:17:38.484764+00:00",
   "title": "Design System: OpsRelay",
   "extensions": {
     "colorMeta": {
       "primary": {
         "role": "primary",
         "displayName": "Primary",
-        "canonical": "#315bd6",
+        "canonical": "#086557",
         "tonalRamp": [
-          "oklch(15% 0.17 265)",
-          "oklch(25% 0.17 265)",
-          "oklch(35% 0.17 265)",
-          "oklch(45% 0.17 265)",
-          "oklch(55% 0.17 265)",
-          "oklch(65% 0.17 265)",
-          "oklch(80% 0.17 265)",
-          "oklch(95% 0.17 265)"
+          "oklch(15% 0.08 170)",
+          "oklch(25% 0.08 170)",
+          "oklch(35% 0.08 170)",
+          "oklch(45% 0.08 170)",
+          "oklch(55% 0.08 170)",
+          "oklch(65% 0.08 170)",
+          "oklch(80% 0.08 170)",
+          "oklch(95% 0.08 170)"
         ]
       },
       "primary-soft": {
         "role": "primary",
         "displayName": "Primary Soft",
-        "canonical": "#eef2ff",
+        "canonical": "#e3f1e8",
         "tonalRamp": [
-          "oklch(15% 0.17 265)",
-          "oklch(25% 0.17 265)",
-          "oklch(35% 0.17 265)",
-          "oklch(45% 0.17 265)",
-          "oklch(55% 0.17 265)",
-          "oklch(65% 0.17 265)",
-          "oklch(80% 0.17 265)",
-          "oklch(95% 0.17 265)"
+          "oklch(15% 0.08 170)",
+          "oklch(25% 0.08 170)",
+          "oklch(35% 0.08 170)",
+          "oklch(45% 0.08 170)",
+          "oklch(55% 0.08 170)",
+          "oklch(65% 0.08 170)",
+          "oklch(80% 0.08 170)",
+          "oklch(95% 0.08 170)"
         ]
       },
       "background": {
         "role": "neutral",
         "displayName": "Background",
-        "canonical": "#f6f7f9",
+        "canonical": "#f5f6ef",
         "tonalRamp": [
-          "oklch(15% 0.02 265)",
-          "oklch(25% 0.02 265)",
-          "oklch(35% 0.02 265)",
-          "oklch(45% 0.02 265)",
-          "oklch(55% 0.02 265)",
-          "oklch(65% 0.02 265)",
-          "oklch(80% 0.02 265)",
-          "oklch(95% 0.02 265)"
+          "oklch(15% 0.01 100)",
+          "oklch(25% 0.01 100)",
+          "oklch(35% 0.01 100)",
+          "oklch(45% 0.01 100)",
+          "oklch(55% 0.01 100)",
+          "oklch(65% 0.01 100)",
+          "oklch(80% 0.01 100)",
+          "oklch(95% 0.01 100)"
         ]
       },
       "surface": {
@@ -67,46 +67,46 @@
       "ink": {
         "role": "neutral",
         "displayName": "Ink",
-        "canonical": "#202632",
+        "canonical": "#193c34",
         "tonalRamp": [
-          "oklch(15% 0.02 265)",
-          "oklch(25% 0.02 265)",
-          "oklch(35% 0.02 265)",
-          "oklch(45% 0.02 265)",
-          "oklch(55% 0.02 265)",
-          "oklch(65% 0.02 265)",
-          "oklch(80% 0.02 265)",
-          "oklch(95% 0.02 265)"
+          "oklch(15% 0.025 160)",
+          "oklch(25% 0.025 160)",
+          "oklch(35% 0.025 160)",
+          "oklch(45% 0.025 160)",
+          "oklch(55% 0.025 160)",
+          "oklch(65% 0.025 160)",
+          "oklch(80% 0.025 160)",
+          "oklch(95% 0.025 160)"
         ]
       },
       "muted": {
         "role": "neutral",
         "displayName": "Muted",
-        "canonical": "#606a7a",
+        "canonical": "#596c64",
         "tonalRamp": [
-          "oklch(15% 0.02 265)",
-          "oklch(25% 0.02 265)",
-          "oklch(35% 0.02 265)",
-          "oklch(45% 0.02 265)",
-          "oklch(55% 0.02 265)",
-          "oklch(65% 0.02 265)",
-          "oklch(80% 0.02 265)",
-          "oklch(95% 0.02 265)"
+          "oklch(15% 0.025 160)",
+          "oklch(25% 0.025 160)",
+          "oklch(35% 0.025 160)",
+          "oklch(45% 0.025 160)",
+          "oklch(55% 0.025 160)",
+          "oklch(65% 0.025 160)",
+          "oklch(80% 0.025 160)",
+          "oklch(95% 0.025 160)"
         ]
       },
       "line": {
         "role": "neutral",
         "displayName": "Line",
-        "canonical": "#e4e7ed",
+        "canonical": "#dce5dc",
         "tonalRamp": [
-          "oklch(15% 0.02 265)",
-          "oklch(25% 0.02 265)",
-          "oklch(35% 0.02 265)",
-          "oklch(45% 0.02 265)",
-          "oklch(55% 0.02 265)",
-          "oklch(65% 0.02 265)",
-          "oklch(80% 0.02 265)",
-          "oklch(95% 0.02 265)"
+          "oklch(15% 0.025 160)",
+          "oklch(25% 0.025 160)",
+          "oklch(35% 0.025 160)",
+          "oklch(45% 0.025 160)",
+          "oklch(55% 0.025 160)",
+          "oklch(65% 0.025 160)",
+          "oklch(80% 0.025 160)",
+          "oklch(95% 0.025 160)"
         ]
       },
       "success": {
@@ -172,76 +172,91 @@
       "public-paper": {
         "role": "neutral",
         "displayName": "Public paper",
-        "canonical": "#fbfcfa",
+        "canonical": "#fcfbf6",
         "tonalRamp": [
-          "oklch(15% 0.008 135)",
-          "oklch(25% 0.008 135)",
-          "oklch(35% 0.008 135)",
-          "oklch(45% 0.008 135)",
-          "oklch(55% 0.008 135)",
-          "oklch(65% 0.008 135)",
-          "oklch(80% 0.008 135)",
-          "oklch(95% 0.008 135)"
+          "oklch(15% 0.01 100)",
+          "oklch(25% 0.01 100)",
+          "oklch(35% 0.01 100)",
+          "oklch(45% 0.01 100)",
+          "oklch(55% 0.01 100)",
+          "oklch(65% 0.01 100)",
+          "oklch(80% 0.01 100)",
+          "oklch(95% 0.01 100)"
         ]
       },
       "public-ink": {
         "role": "neutral",
         "displayName": "Public ink",
-        "canonical": "#192a3c",
+        "canonical": "#173d37",
         "tonalRamp": [
-          "oklch(15% 0.04 250)",
-          "oklch(25% 0.04 250)",
-          "oklch(35% 0.04 250)",
-          "oklch(45% 0.04 250)",
-          "oklch(55% 0.04 250)",
-          "oklch(65% 0.04 250)",
-          "oklch(80% 0.04 250)",
-          "oklch(95% 0.04 250)"
+          "oklch(15% 0.025 160)",
+          "oklch(25% 0.025 160)",
+          "oklch(35% 0.025 160)",
+          "oklch(45% 0.025 160)",
+          "oklch(55% 0.025 160)",
+          "oklch(65% 0.025 160)",
+          "oklch(80% 0.025 160)",
+          "oklch(95% 0.025 160)"
         ]
       },
       "public-quiet": {
         "role": "neutral",
         "displayName": "Public quiet",
-        "canonical": "#586574",
+        "canonical": "#526963",
         "tonalRamp": [
-          "oklch(15% 0.025 250)",
-          "oklch(25% 0.025 250)",
-          "oklch(35% 0.025 250)",
-          "oklch(45% 0.025 250)",
-          "oklch(55% 0.025 250)",
-          "oklch(65% 0.025 250)",
-          "oklch(80% 0.025 250)",
-          "oklch(95% 0.025 250)"
+          "oklch(15% 0.025 160)",
+          "oklch(25% 0.025 160)",
+          "oklch(35% 0.025 160)",
+          "oklch(45% 0.025 160)",
+          "oklch(55% 0.025 160)",
+          "oklch(65% 0.025 160)",
+          "oklch(80% 0.025 160)",
+          "oklch(95% 0.025 160)"
         ]
       },
       "public-rule": {
         "role": "neutral",
         "displayName": "Public rule",
-        "canonical": "#dce2e5",
+        "canonical": "#d9e3db",
         "tonalRamp": [
-          "oklch(15% 0.015 235)",
-          "oklch(25% 0.015 235)",
-          "oklch(35% 0.015 235)",
-          "oklch(45% 0.015 235)",
-          "oklch(55% 0.015 235)",
-          "oklch(65% 0.015 235)",
-          "oklch(80% 0.015 235)",
-          "oklch(95% 0.015 235)"
+          "oklch(15% 0.025 160)",
+          "oklch(25% 0.025 160)",
+          "oklch(35% 0.025 160)",
+          "oklch(45% 0.025 160)",
+          "oklch(55% 0.025 160)",
+          "oklch(65% 0.025 160)",
+          "oklch(80% 0.025 160)",
+          "oklch(95% 0.025 160)"
         ]
       },
-      "public-blue-section": {
+      "public-brain-section": {
         "role": "primary",
-        "displayName": "Company-memory blue",
-        "canonical": "#233e88",
+        "displayName": "Company-memory dark teal",
+        "canonical": "#123f37",
         "tonalRamp": [
-          "oklch(15% 0.13 265)",
-          "oklch(25% 0.13 265)",
-          "oklch(35% 0.13 265)",
-          "oklch(45% 0.13 265)",
-          "oklch(55% 0.13 265)",
-          "oklch(65% 0.13 265)",
-          "oklch(80% 0.13 265)",
-          "oklch(95% 0.13 265)"
+          "oklch(15% 0.08 170)",
+          "oklch(25% 0.08 170)",
+          "oklch(35% 0.08 170)",
+          "oklch(45% 0.08 170)",
+          "oklch(55% 0.08 170)",
+          "oklch(65% 0.08 170)",
+          "oklch(80% 0.08 170)",
+          "oklch(95% 0.08 170)"
+        ]
+      },
+      "public-context": {
+        "role": "neutral",
+        "displayName": "Public Context",
+        "canonical": "#e0eee4",
+        "tonalRamp": [
+          "oklch(15% 0.025 160)",
+          "oklch(25% 0.025 160)",
+          "oklch(35% 0.025 160)",
+          "oklch(45% 0.025 160)",
+          "oklch(55% 0.025 160)",
+          "oklch(65% 0.025 160)",
+          "oklch(80% 0.025 160)",
+          "oklch(95% 0.025 160)"
         ]
       }
     },
@@ -253,7 +268,7 @@
       },
       {
         "name": "public-preview",
-        "value": "0 16px 50px -24px #17314d3d",
+        "value": "0 16px 50px -24px #153e313d",
         "purpose": "Lift the interactive supply preview from public paper."
       },
       {
@@ -263,7 +278,7 @@
       },
       {
         "name": "public-mobile-navigation",
-        "value": "0 10px 35px -15px #17314d38",
+        "value": "0 10px 35px -15px #153e3138",
         "purpose": "Separate the open phone menu."
       }
     ],
@@ -344,7 +359,7 @@
       "refersTo": "button-primary",
       "description": "The primary operation in a group.",
       "html": "<button class=\"ds-primary\">Record update</button>",
-      "css": ".ds-primary{font:550 12px Geist,sans-serif;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer;transition:background-color .16s;background:var(--accent,#315bd6);color:#fff;border:1px solid var(--accent,#315bd6)}.ds-primary:hover{background:#244bbd}.ds-primary:focus-visible{outline:3px solid #91a9fa;outline-offset:3px}.ds-primary:disabled{opacity:.55;cursor:wait}"
+      "css": ".ds-primary{font:550 12px Geist,sans-serif;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer;transition:background-color .16s;background:var(--accent,#086557);color:#fff;border:1px solid var(--accent,#086557)}.ds-primary:hover{background:#064d43}.ds-primary:focus-visible{outline:3px solid #499c81;outline-offset:3px}.ds-primary:disabled{opacity:.55;cursor:wait}"
     },
     {
       "name": "Secondary button",
@@ -352,21 +367,21 @@
       "refersTo": "button-secondary",
       "description": "Refresh and secondary actions.",
       "html": "<button class=\"ds-secondary\">Refresh</button>",
-      "css": ".ds-secondary{font:550 12px Geist,sans-serif;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer;transition:background-color .16s;background:#fff;color:#3b475b;border:1px solid #dce1e9}.ds-secondary:hover{background:#f5f7fb;border-color:#c1cbdc}.ds-secondary:focus-visible{outline:3px solid #91a9fa;outline-offset:3px}"
+      "css": ".ds-secondary{font:550 12px Geist,sans-serif;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer;transition:background-color .16s;background:#fff;color:#3b475b;border:1px solid #dce1e9}.ds-secondary:hover{background:#f5f7fb;border-color:#c1cbdc}.ds-secondary:focus-visible{outline:3px solid #499c81;outline-offset:3px}"
     },
     {
       "name": "Text field",
       "kind": "input",
       "description": "Native form controls for supply data.",
       "html": "<label class=\"ds-label\">Source note<input class=\"ds-input\" value=\"Supplier confirmed a new date\"></label>",
-      "css": ".ds-label{font:550 11px Geist,sans-serif;color:#49566a;display:grid;gap:7px}.ds-input{font:12px Geist,sans-serif;padding:10px 11px;border:1px solid #d8dee8;border-radius:6px;color:#27344c;background:#fff;caret-color:#315bd6}.ds-input:hover{border-color:#b0bdd4}.ds-input:focus-visible{outline:3px solid #91a9fa;outline-offset:3px}"
+      "css": ".ds-label{font:550 11px Geist,sans-serif;color:#49566a;display:grid;gap:7px}.ds-input{font:12px Geist,sans-serif;padding:10px 11px;border:1px solid #d8dee8;border-radius:6px;color:#27344c;background:#fff;caret-color:#086557}.ds-input:hover{border-color:#b0bdd4}.ds-input:focus-visible{outline:3px solid #499c81;outline-offset:3px}"
     },
     {
       "name": "Navigation item",
       "kind": "nav",
       "description": "Current workspace destination.",
       "html": "<a class=\"ds-nav\" href=\"#overview\" aria-current=\"location\">Overview</a>",
-      "css": ".ds-nav{display:block;font:600 12px Geist,sans-serif;padding:10px;border-radius:6px;background:#eef2ff;color:#315bd6;text-decoration:none}.ds-nav:hover{background:#e3eaff}.ds-nav:focus-visible{outline:3px solid #91a9fa;outline-offset:3px}"
+      "css": ".ds-nav{display:block;font:600 12px Geist,sans-serif;padding:10px;border-radius:6px;background:#e3f1e8;color:#086557;text-decoration:none}.ds-nav:hover{background:#e3eaff}.ds-nav:focus-visible{outline:3px solid #499c81;outline-offset:3px}"
     },
     {
       "name": "Status badge",
@@ -381,7 +396,7 @@
       "refersTo": "panel",
       "description": "A bordered task or evidence section.",
       "html": "<section class=\"ds-panel\"><h2>Customer commitments</h2><p>3 orders traced</p></section>",
-      "css": ".ds-panel{font:14px Geist,sans-serif;color:#202632;background:#fff;border:1px solid #e4e7ed;border-radius:9px;padding:20px}.ds-panel h2{font-size:16px;font-weight:650;margin:0 0 8px}.ds-panel p{font-size:12px;color:#606a7a;margin:0}"
+      "css": ".ds-panel{font:14px Geist,sans-serif;color:#193c34;background:#fff;border:1px solid #dce5dc;border-radius:9px;padding:20px}.ds-panel h2{font-size:16px;font-weight:650;margin:0 0 8px}.ds-panel p{font-size:12px;color:#596c64;margin:0}"
     },
     {
       "name": "Public primary button",
@@ -389,33 +404,40 @@
       "refersTo": "button-public-primary",
       "description": "Create an isolated demo with visible pending and error feedback.",
       "html": "<button class=\"ds-public-action\">Explore live demo <span aria-hidden=\"true\">\u2192</span></button>",
-      "css": ".ds-public-action{display:inline-flex;align-items:center;gap:28px;min-height:48px;padding:13px 19px;font:550 13px Geist,sans-serif;border:1px solid #315bd6;border-radius:6px;background:#315bd6;color:#fff;cursor:pointer;transition:background .18s}.ds-public-action:hover{background:#2447af;border-color:#2447af}.ds-public-action:focus-visible{outline:3px solid #315bd6;outline-offset:5px}.ds-public-action:disabled{opacity:.6}"
+      "css": ".ds-public-action{display:inline-flex;align-items:center;gap:28px;min-height:48px;padding:13px 19px;font:550 13px Geist,sans-serif;border:1px solid #086557;border-radius:6px;background:#086557;color:#fff;cursor:pointer;transition:background .18s}.ds-public-action:hover{background:#064d43;border-color:#064d43}.ds-public-action:focus-visible{outline:3px solid #086557;outline-offset:5px}.ds-public-action:disabled{opacity:.6}"
     },
     {
       "name": "Public scenario choices",
       "kind": "custom",
       "description": "Three pressed-state choices that recalculate the disclosed synthetic scenario.",
       "html": "<div class=\"ds-scenarios\" role=\"group\" aria-label=\"Supply scenario\"><button aria-pressed=\"false\">Original plan</button><button aria-pressed=\"true\">Supplier delay</button><button aria-pressed=\"false\">Recovery</button></div>",
-      "css": ".ds-scenarios{display:flex;gap:4px;background:#f0f3f6;padding:4px;border-radius:6px}.ds-scenarios button{flex:1;min-height:35px;padding:7px 4px;border:1px solid transparent;border-radius:4px;background:transparent;color:#536174;font:550 11px Geist,sans-serif;cursor:pointer}.ds-scenarios button[aria-pressed=true]{background:#fff;border-color:#dbe2eb;color:#172a42;box-shadow:0 2px 3px #162d4410}.ds-scenarios button:hover{color:#315bd6}.ds-scenarios button:focus-visible{outline:3px solid #315bd6;outline-offset:5px}"
+      "css": ".ds-scenarios{display:flex;gap:4px;background:#f0f3f6;padding:4px;border-radius:6px}.ds-scenarios button{flex:1;min-height:35px;padding:7px 4px;border:1px solid transparent;border-radius:4px;background:transparent;color:#536174;font:550 11px Geist,sans-serif;cursor:pointer}.ds-scenarios button[aria-pressed=true]{background:#fff;border-color:#dbe2eb;color:#172a42;box-shadow:0 2px 3px #162d4410}.ds-scenarios button:hover{color:#086557}.ds-scenarios button:focus-visible{outline:3px solid #086557;outline-offset:5px}"
     },
     {
       "name": "Public evidence panel",
       "kind": "card",
       "description": "Illustrative evidence inside the company-memory section.",
       "html": "<section class=\"ds-public-evidence\"><h3>Keep the source with the story.</h3><div class=\"ds-public-record\"><span>PO-204 \u00b7 Superseded plan</span><blockquote>\u201cSix M14 motors expected on 20 October 2026.\u201d</blockquote><strong>Revised arrival: 5 November</strong></div><p>Illustrative product preview \u00b7 synthetic records</p></section>",
-      "css": ".ds-public-evidence{padding:29px;background:#f8faff;color:#192a3c;border-radius:7px;font:12px/1.8 Geist,sans-serif}.ds-public-evidence h3{font-size:19px;font-weight:550;margin:0}.ds-public-record{margin-top:24px;padding:18px;background:#fff;border:1px solid #dce3ee;border-radius:4px}.ds-public-record span{font-size:10px;color:#586574}.ds-public-record blockquote{font-size:14px;line-height:1.7;margin:20px 0}.ds-public-record strong{display:block;border-top:1px solid #e1e6ed;padding-top:14px;font-weight:550}.ds-public-evidence p{color:#5b6b81;font-size:10px;margin:17px 0 0}"
+      "css": ".ds-public-evidence{padding:29px;background:#f4faf6;color:#173d37;border-radius:7px;font:12px/1.8 Geist,sans-serif}.ds-public-evidence h3{font-size:19px;font-weight:550;margin:0}.ds-public-record{margin-top:24px;padding:18px;background:#fff;border:1px solid #dce3ee;border-radius:4px}.ds-public-record span{font-size:10px;color:#526963}.ds-public-record blockquote{font-size:14px;line-height:1.7;margin:20px 0}.ds-public-record strong{display:block;border-top:1px solid #e1e6ed;padding-top:14px;font-weight:550}.ds-public-evidence p{color:#5b6b81;font-size:10px;margin:17px 0 0}"
     },
     {
       "name": "Public FAQ row",
       "kind": "custom",
       "description": "Native expandable question and boundary explanation.",
       "html": "<details class=\"ds-public-faq\"><summary>Can I try it without creating an account?</summary><p>Explore live demo creates an isolated workspace with fictional company records.</p></details>",
-      "css": ".ds-public-faq{border-block:1px solid #dce2e5;color:#192a3c;font:13px/1.85 Geist,sans-serif}.ds-public-faq summary{display:flex;align-items:center;justify-content:space-between;gap:20px;list-style:none;min-height:75px;font-weight:500;cursor:pointer}.ds-public-faq summary::after{content:\"+\";color:#526782}.ds-public-faq[open] summary::after{content:\"\u2212\"}.ds-public-faq summary:focus-visible{outline:3px solid #315bd6;outline-offset:5px}.ds-public-faq p{padding:0 30px 24px 0;margin:0;color:#586574}"
+      "css": ".ds-public-faq{border-block:1px solid #d9e3db;color:#173d37;font:13px/1.85 Geist,sans-serif}.ds-public-faq summary{display:flex;align-items:center;justify-content:space-between;gap:20px;list-style:none;min-height:75px;font-weight:500;cursor:pointer}.ds-public-faq summary::after{content:\"+\";color:#526782}.ds-public-faq[open] summary::after{content:\"\u2212\"}.ds-public-faq summary:focus-visible{outline:3px solid #086557;outline-offset:5px}.ds-public-faq p{padding:0 30px 24px 0;margin:0;color:#526963}"
+    },
+    {
+      "name": "Reviewed-document search",
+      "kind": "custom",
+      "description": "Ruled Company Brain search with labelled query, configuration/indexing guidance, a status announcement, and mint passage cards linked to original sources. Below 700px the form stacks.",
+      "html": "<section class=\"ds-evidence-search\"><label for=\"ds-evidence-query\">Search reviewed documents</label><input id=\"ds-evidence-query\"><button>Search evidence</button><p role=\"status\">1 verified passage found.</p><article><h4>Supplier notice</h4><span>REVIEWED EVIDENCE</span><blockquote>Original reviewed passage</blockquote><a href=\"#source\">Read original source</a></article></section>",
+      "css": ".ds-evidence-search{display:grid;gap:12px;padding-block:24px;border-block:1px solid #dce5dc;color:#193c34;font:13px/1.7 Geist,sans-serif}.ds-evidence-search input{padding:11px 13px;border:1px solid #aec7b8;border-radius:6px}.ds-evidence-search button{background:#086557;color:#fff;padding:10px;border:0;border-radius:6px}.ds-evidence-search article{padding:20px;background:#edf5ee;border:1px solid #d1e3d5;border-radius:7px}.ds-evidence-search blockquote{margin:16px 0;overflow-wrap:anywhere}.ds-evidence-search a{color:#086557}.ds-evidence-search :is(a,button,input):focus-visible{outline:3px solid #499c81;outline-offset:3px}"
     }
   ],
   "narrative": {
     "northStar": "Control tower",
-    "overview": "A light control-tower workspace gives priority to connected commitments, current supply facts and the next review decision. Compact type, disciplined rules and a restrained blue action color keep the operational task legible.\n\nThe public landing and trust pages extend this world with generous display type, near-white paper, a responsive supply scenario and an expansive blue company-memory section. The operator workspace retains its compact hierarchy and existing tokens. Public examples disclose their synthetic or illustrative status beside the content.",
+    "overview": "A light control-tower workspace gives priority to connected commitments, current supply facts and the next review decision. Compact type, disciplined rules and a restrained deep teal action color keep the operational task legible.\n\nThe public landing and trust pages extend this world with generous display type, warm ivory paper, a responsive supply scenario and an expansive dark teal company-memory section. The operator workspace retains its compact hierarchy with matching teal action and mint context roles. Public examples disclose their synthetic or illustrative status beside the content.",
     "keyCharacteristics": [
       "Compact, factual task hierarchy.",
       "Clear relationship paths and chronological evidence.",
@@ -450,6 +472,14 @@
       "Do not add decorative eyebrows above headings.",
       "Do not use color alone to communicate risk.",
       "Do not hide core actions behind operator credentials when showing the synthetic demo."
+    ],
+    "approvedRefinements": [
+      {
+        "date": "2026-10-19",
+        "scope": "Shared palette and reviewed-document search",
+        "decision": "Retain the control-tower direction. Use deep teal actions, dark teal Company Brain, warm ivory paper and pale mint context. Keep labelled amber risk and original recorded media colours.",
+        "review": "Independent finish review accepted palette, layout and contrast; result counts announce status."
+      }
     ]
   }
 }

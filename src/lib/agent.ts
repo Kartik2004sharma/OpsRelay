@@ -6,12 +6,14 @@ import { getState } from "./ops";
 import { knowledge } from "./knowledge";
 import { write, rows } from "./graph";
 import { ApiError } from "./http";
+import { ragConfigured, searchKnowledge } from "./graphrag";
 
 const declarations = [
   { name: "get_supply", description: "Read the current graph-backed supply facts and source records.", parameters: { type: "OBJECT", properties: {} } },
   { name: "get_commitments", description: "Read deterministic stock allocation, customer commitments, owners, and graph paths.", parameters: { type: "OBJECT", properties: {} } },
   { name: "search_sources", description: "Find original evidence. Pending/rejected notices are unverified; superseded sources are historical.", parameters: { type: "OBJECT", properties: { query: { type: "STRING" } }, required: ["query"] } },
   { name: "get_decisions", description: "Read past supply events, reviewed tasks, and human lessons with evidence.", parameters: { type: "OBJECT", properties: {} } },
+  { name: "search_knowledge", description: "Semantic search through GraphRAG SDK indexed, reviewed supplier documents. Evidence may be historical; never override calculated commitments.", parameters: { type: "OBJECT", properties: { query: { type: "STRING" } }, required: ["query"] } },
   { name: "finish", description: "Conclude only after reading commitments and evidence. Cite only source IDs returned by tools. Recommendations must remain proposals.", parameters: { type: "OBJECT", properties: { summary: { type: "STRING" }, sourceIds: { type: "ARRAY", items: { type: "STRING" } }, nextSteps: { type: "ARRAY", items: { type: "STRING" } } }, required: ["summary", "sourceIds", "nextSteps"] } },
 ];
 
@@ -27,7 +29,16 @@ export async function investigate(question: unknown, actor: string) {
   const handles = citationHandles(state.sources.map((source) => source.id));
   let result;
   const execute = async ({ name, args = {} }: ToolCall) => {
-      if (name !== "search_sources" && Object.keys(args).length) throw new Error("Unexpected graph tool arguments.");
+      if (!["search_sources", "search_knowledge"].includes(name) && Object.keys(args).length) throw new Error("Unexpected graph tool arguments.");
+      if (name === "search_knowledge") {
+        if (Object.keys(args).some((key) => key !== "query") || typeof args.query !== "string" || args.query.length < 3 || args.query.length > 100) throw new Error("Invalid document search arguments.");
+        if (!ragConfigured()) return { data: { available: false, reason: "GraphRAG SDK is not configured." }, sourceIds: [] };
+        try {
+          const evidence = await searchKnowledge(args.query);
+          const items = evidence.items.filter((item) => state.sources.some((source) => source.id === item.sourceId));
+          return { data: { items, sdk: evidence.sdk }, sourceIds: [...new Set(items.map((item) => item.sourceId))] };
+        } catch { return { data: { available: false, reason: "Document search is temporarily unavailable; use original source tools." }, sourceIds: [] }; }
+      }
       if (name === "get_supply") {
         const sourceIds = [state.currentSourceId];
         return { data: { supplier: state.supplier, component: state.component, currentDate: state.currentDate, revision: state.revision, stock: state.stockQuantity, inbound: state.supplyQuantity, sources: sources(sourceIds) }, sourceIds };

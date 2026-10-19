@@ -12,7 +12,9 @@
     "configure": "node scripts/configure-local.mjs",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "test:cloud": "node scripts/cloud-smoke.mjs",
-    "test:e2e": "npm run build && playwright test"
+    "test:e2e": "npm run build && playwright test",
+    "test:graphrag": ".venv/bin/python graphrag/test_worker.py",
+    "test:graphrag:cloud": "node scripts/graphrag-smoke.mjs"
   },
   "dependencies": {
     "falkordb": "^6.8.0",

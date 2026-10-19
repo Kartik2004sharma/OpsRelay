@@ -51,3 +51,7 @@ next-env.d.ts
 .impeccable/review/
 /brag-output-*/
 /.private-backups/
+
+.venv/
+__pycache__/
+*.pyc
